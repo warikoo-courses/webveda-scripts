@@ -252,11 +252,14 @@
 
     const country = (await (await fetch('https://ipapi.co/json/')).json()).country;
 
-    window.initializePaymentModal = function(e) {
-      if (e) e.preventDefault();
-      const modal = document.getElementById('formModal');
-      modal.classList.remove('wv-hidden');
-    };
+    const purchaseButton = document.querySelector('.purchase-button');
+    if (purchaseButton) {
+        purchaseButton.onclick = (e) => {
+            e.preventDefault();
+            const modal = document.getElementById('formModal');
+            modal.classList.remove('wv-hidden');
+        };
+    }
 
     if (country === 'IN') {
       const paymentArray = await generatePayment(course_name);
