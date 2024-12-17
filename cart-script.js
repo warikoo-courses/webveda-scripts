@@ -1,5 +1,4 @@
 (function() {
-  // Dynamically add Razorpay and Stripe scripts
   const razorpayScript = document.createElement('script');
   razorpayScript.src = 'https://checkout.razorpay.com/v1/checkout.js';
   document.head.appendChild(razorpayScript);
@@ -7,11 +6,7 @@
   const stripeScript = document.createElement('script');
   stripeScript.src = 'https://js.stripe.com/v3/';
   document.head.appendChild(stripeScript);
-
-  // Rest of your modal and payment code...
-})();
-
-(function() {
+  
   // Insert modal HTML into document
   const modalHTML = `
     <div id="formModal" class="wv-modal wv-hidden">
