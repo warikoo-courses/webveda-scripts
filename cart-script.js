@@ -1,4 +1,17 @@
 (function() {
+  // Dynamically add Razorpay and Stripe scripts
+  const razorpayScript = document.createElement('script');
+  razorpayScript.src = 'https://checkout.razorpay.com/v1/checkout.js';
+  document.head.appendChild(razorpayScript);
+
+  const stripeScript = document.createElement('script');
+  stripeScript.src = 'https://js.stripe.com/v3/';
+  document.head.appendChild(stripeScript);
+
+  // Rest of your modal and payment code...
+})();
+
+(function() {
   // Insert modal HTML into document
   const modalHTML = `
     <div id="formModal" class="wv-modal wv-hidden">
@@ -243,16 +256,15 @@
     }
 
     const country = (await (await fetch('https://ipapi.co/json/')).json()).country;
-    const btn = document.getElementById('purchase-button-cart');
-    btn.style.cursor = 'pointer';
+
+    window.initializePaymentModal = function(e) {
+      if (e) e.preventDefault();
+      const modal = document.getElementById('formModal');
+      modal.classList.remove('wv-hidden');
+    };
 
     if (country === 'IN') {
       const paymentArray = await generatePayment(course_name);
-      
-      btn.onclick = e => {
-        e.preventDefault();
-        modal.classList.remove('wv-hidden');
-      };
 
       userForm.onsubmit = async (e) => {
         e.preventDefault();
@@ -290,11 +302,6 @@
       };
     } else {
       const stripe = Stripe('pk_test_51NramAIh34G26BoLsAPEYWa9Q0hh6hIjhAqCNdhUcZcU5ZmL0odpH9b9lt4xpUNARB4VAXRLPzMKj86YhRT0fBJb00YVptVyRu');
-      
-      btn.onclick = e => {
-        e.preventDefault();
-        modal.classList.remove('wv-hidden');
-      };
 
       userForm.onsubmit = async (e) => {
         e.preventDefault();
