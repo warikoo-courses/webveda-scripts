@@ -172,7 +172,7 @@
     async function generatePayment(course_name) {
       try {
         const url = new URL(window.location.href);
-        body = JSON.stringify({
+        const body_rzp = JSON.stringify({
           utmSource: url.searchParams.get("utm_source"),
           utmMedium: url.searchParams.get("utm_medium"),
           utmCampaign: url.searchParams.get("utm_campaign"),
@@ -187,7 +187,7 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             //pass the utm params here
-            body: body,
+            body: body_rzp,
           }
         );
         return response.ok ? await response.json() : [];
@@ -338,6 +338,18 @@
         }
 
         if (validateForm(name, whatsapp, email)) {
+          const url = new URL(window.location.href);
+          const body_stripe = JSON.stringify({
+            name: name,
+            email: email,
+            phone: whatsapp,
+            utmSource: url.searchParams.get("utm_source"),
+            utmMedium: url.searchParams.get("utm_medium"),
+            utmCampaign: url.searchParams.get("utm_campaign"),
+            utmContent: url.searchParams.get("utm_content"),
+            utmTerm: url.searchParams.get("utm_term"),
+            eventId: url.searchParams.get("eventId"),
+          });
           const response = await fetch(
             `https://webveda-checkout.onrender.com/api/v1/stripepayment/${course_name}`,
             {
@@ -345,11 +357,7 @@
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                name: name,
-                email: email,
-                phone: whatsapp,
-              }),
+              body: body_stripe,
             }
           );
 
