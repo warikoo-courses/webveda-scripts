@@ -171,21 +171,23 @@
 
     async function generatePayment(course_name) {
       try {
-        const url = new URLSearchParams(window.location.href);
+        const url = new URL(window.location.href);
+        body = JSON.stringify({
+          utmSource: url.searchParams.get("utm_source"),
+          utmMedium: url.searchParams.get("utm_medium"),
+          utmCampaign: url.searchParams.get("utm_campaign"),
+          utmContent: url.searchParams.get("utm_content"),
+          utmTerm: url.searchParams.get("utm_term"),
+          eventId: url.searchParams.get("eventId"),
+        });
+        console.log(body);
         const response = await fetch(
           `https://webveda-checkout.onrender.com/api/v1/paymentGen/${course_name}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             //pass the utm params here
-            body: JSON.stringify({
-              utmSource: url.searchParams.get("utm_source"),
-              utmMedium: url.searchParams.get("utm_medium"),
-              utmCampaign: url.searchParams.get("utm_campaign"),
-              utmContent: url.searchParams.get("utm_content"),
-              utmTerm: url.searchParams.get("utm_term"),
-              eventId: url.searchParams.get("eventId"),
-            }),
+            body: body,
           }
         );
         return response.ok ? await response.json() : [];
