@@ -333,10 +333,6 @@
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
 
-        if (whatsapp.length === 10) {
-          whatsapp = `91${whatsapp}`;
-        }
-
         if (validateForm(name, whatsapp, email)) {
           const url = new URL(window.location.href);
           const body_stripe = JSON.stringify({
