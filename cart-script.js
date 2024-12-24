@@ -171,8 +171,7 @@
 
     async function generatePayment(course_name) {
       try {
-        //urlparams
-        const url = new URL(window.location.href);
+        const url = new URLSearchParams(window.location.href);
         const response = await fetch(
           `https://webveda-checkout.onrender.com/api/v1/paymentGen/${course_name}`,
           {
