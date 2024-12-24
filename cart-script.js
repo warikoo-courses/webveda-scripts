@@ -176,6 +176,15 @@
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            //pass the utm params here
+            body: JSON.stringify({
+              utmSource: url.searchParams.get("utm_source"),
+              utmMedium: url.searchParams.get("utm_medium"),
+              utmCampaign: url.searchParams.get("utm_campaign"),
+              utmContent: url.searchParams.get("utm_content"),
+              utmTerm: url.searchParams.get("utm_term"),
+              eventId: url.searchParams.get("eventId"),
+            }),
           }
         );
         return response.ok ? await response.json() : [];
