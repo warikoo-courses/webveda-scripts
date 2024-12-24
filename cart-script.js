@@ -333,6 +333,7 @@
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
 
+        // Validate form fields and Collect utm params
         if (validateForm(name, whatsapp, email)) {
           const url = new URL(window.location.href);
           const body_stripe = JSON.stringify({
