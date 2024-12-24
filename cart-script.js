@@ -180,7 +180,7 @@
           utmTerm: url.searchParams.get("utm_term"),
           eventId: url.searchParams.get("eventId"),
         });
-        console.log(body);
+        console.log(body_rzp);
         const response = await fetch(
           `https://webveda-checkout.onrender.com/api/v1/paymentGen/${course_name}`,
           {
