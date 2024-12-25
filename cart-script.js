@@ -169,10 +169,11 @@
       }
     });
 
-    async function generatePayment(course_name) {
+    async function generatePayment(course_name, name) {
       try {
         const url = new URL(window.location.href);
         const body_rzp = JSON.stringify({
+          name: name,
           utmSource: url.searchParams.get("utm_source"),
           utmMedium: url.searchParams.get("utm_medium"),
           utmCampaign: url.searchParams.get("utm_campaign"),
@@ -283,14 +284,13 @@
     }
 
     if (country === "IN") {
-      const paymentArray = await generatePayment(course_name);
-
       userForm.onsubmit = async (e) => {
         e.preventDefault();
 
         const name = document.getElementById("name").value.trim();
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
+        const paymentArray = await generatePayment(course_name, name);
 
         if (validateForm(name, whatsapp, email)) {
           const rzp1 = new Razorpay({
