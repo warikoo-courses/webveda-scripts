@@ -294,7 +294,7 @@
 
         if (validateForm(name, whatsapp, email)) {
           const rzp1 = new Razorpay({
-            key: "rzp_test_qznxbMCkyK8R4T",
+            key: "rzp_live_YZSHqiTnfwaXXt",
             currency: "INR",
             name: "Zaan WebVeda Pvt. Ltd.",
             description: "Test Transaction",
@@ -323,7 +323,7 @@
       };
     } else {
       const stripe = Stripe(
-        "pk_test_51NramAIh34G26BoLsAPEYWa9Q0hh6hIjhAqCNdhUcZcU5ZmL0odpH9b9lt4xpUNARB4VAXRLPzMKj86YhRT0fBJb00YVptVyRu"
+        "pk_live_51NramAIh34G26BoL2MEuQMbFzUIHGYgn9SIBs7zJmkya79BMzuxJDle7NINc2BNJRtrDjTIGJrXfTDF0ph1qeCUF00bXyEZeNb"
       );
 
       userForm.onsubmit = async (e) => {
