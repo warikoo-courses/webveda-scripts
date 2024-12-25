@@ -297,15 +297,11 @@
             key: "rzp_live_YZSHqiTnfwaXXt",
             currency: "INR",
             name: "Zaan WebVeda Pvt. Ltd.",
-            description: "Test Transaction",
+            description: "Course Transaction",
             order_id: paymentArray[0],
             prefill: {
               email: email,
               contact: whatsapp,
-            },
-            notes: {
-              name: name,
-              address: "TEST",
             },
             handler: (res) => {
               const course_param = new URLSearchParams(
