@@ -294,14 +294,18 @@
     }
     checkURLAndShowForm();
     
-    let lastUrl = location.href;
-    new MutationObserver(() => {
-      const url = location.href;
-      if (url !== lastUrl) {
-        lastUrl = url;
-        checkURLAndShowForm();
-      }
-    }).observe(document, { subtree: true, childList: true });
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function() {
+      originalPushState.apply(this, arguments);
+      checkURLAndShowForm();
+    };
+    
+    history.replaceState = function() {
+      originalReplaceState.apply(this, arguments);
+      checkURLAndShowForm();
+    };
     
     window.addEventListener('popstate', checkURLAndShowForm);
 
