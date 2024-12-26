@@ -281,14 +281,29 @@
       .country;
     } catch(err) {}
 
-    const purchaseButton = document.querySelector(".purchase-button");
-    if (purchaseButton) {
-      purchaseButton.onclick = (e) => {
-        e.preventDefault();
-        const modal = document.getElementById("formModal");
+    function checkURLAndShowForm() {
+      const url = new URL(window.location.href);
+      const hasBasicDetails = url.searchParams.get('basicDetails') === 'true';
+      const modal = document.getElementById("formModal");
+      
+      if (hasBasicDetails) {
         modal.classList.remove("wv-hidden");
-      };
+      } else {
+        modal.classList.add("wv-hidden");
+      }
     }
+    checkURLAndShowForm();
+    
+    let lastUrl = location.href;
+    new MutationObserver(() => {
+      const url = location.href;
+      if (url !== lastUrl) {
+        lastUrl = url;
+        checkURLAndShowForm();
+      }
+    }).observe(document, { subtree: true, childList: true });
+    
+    window.addEventListener('popstate', checkURLAndShowForm);
 
     if (country === "IN") {
       userForm.onsubmit = async (e) => {
