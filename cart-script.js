@@ -172,6 +172,10 @@
     async function generatePayment(course_name, name) {
       try {
         const url = new URL(window.location.href);
+        const timestamp = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('timestamp='))
+            ?.split('=')[1];
         const body_rzp = JSON.stringify({
           name: name,
           utmSource: url.searchParams.get("utm_source"),
@@ -179,7 +183,7 @@
           utmCampaign: url.searchParams.get("utm_campaign"),
           utmContent: url.searchParams.get("utm_content"),
           utmTerm: url.searchParams.get("utm_term"),
-          eventId: url.searchParams.get("eventId"),
+          eventId: timestamp || '',
         });
         console.log(body_rzp);
         const response = await fetch(
