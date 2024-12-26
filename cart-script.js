@@ -275,8 +275,11 @@
       }
     }
 
-    const country = (await (await fetch("https://ipapi.co/json/")).json())
+    let country = "IN";
+    try {
+      country = (await (await fetch("https://ipapi.co/json/")).json())
       .country;
+    } catch(err) {}
 
     const purchaseButton = document.querySelector(".purchase-button");
     if (purchaseButton) {
