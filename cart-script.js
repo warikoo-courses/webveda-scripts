@@ -329,9 +329,13 @@
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
 
-        // Validate form fields and Collect utm params
+        
         if (validateForm(name, whatsapp, email)) {
           const url = new URL(window.location.href);
+          const timestamp = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('timestamp='))
+            ?.split('=')[1];
           const body_stripe = JSON.stringify({
             name: name,
             email: email,
@@ -341,7 +345,7 @@
             utmCampaign: url.searchParams.get("utm_campaign"),
             utmContent: url.searchParams.get("utm_content"),
             utmTerm: url.searchParams.get("utm_term"),
-            eventId: url.searchParams.get("eventId"),
+            eventId: timestamp || "",
           });
           const response = await fetch(
             `https://webveda-checkout.onrender.com/api/v1/stripepayment/${course_name}`,
