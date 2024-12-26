@@ -149,7 +149,11 @@
 
     // Close modal function
     function closeModal() {
-      modal.classList.add("wv-hidden");
+      const url = new URL(window.location.href);
+      const searchParams = new URLSearchParams(url.search);
+      searchParams.delete('basicDetails');
+      const newUrl = `${window.location.pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+      history.pushState({ path: newUrl }, '', newUrl);
     }
 
     // Add close button event listener
