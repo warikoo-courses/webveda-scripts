@@ -259,6 +259,9 @@
         TCGTSU_English: ["starting-up-thankyou", 1499],
         TCGTSU_Hindi: ["starting-up-thankyou", 1399],
         TCGTSU_Both: ["starting-up-thankyou", 1499],
+        TMFS_Premium: ["thank-you-time-management-for-students", 499],
+        TMFS_Standard: ["thank-you-time-management-for-students", 479],
+        TMFS_Basic: ["thank-you-time-management-for-students", 429],
       };
 
       if (courses[course]) {
