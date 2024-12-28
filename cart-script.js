@@ -149,7 +149,11 @@
 
     // Close modal function
     function closeModal() {
-      modal.classList.add("wv-hidden");
+      const url = new URL(window.location.href);
+      const searchParams = new URLSearchParams(url.search);
+      searchParams.delete('basicDetails');
+      const newUrl = `${window.location.pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+      history.pushState({ path: newUrl }, '', newUrl);
     }
 
     // Add close button event listener
@@ -172,6 +176,10 @@
     async function generatePayment(course_name, name) {
       try {
         const url = new URL(window.location.href);
+        const timestamp = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('timestamp='))
+            ?.split('=')[1];
         const body_rzp = JSON.stringify({
           name: name,
           utmSource: url.searchParams.get("utm_source"),
@@ -179,7 +187,7 @@
           utmCampaign: url.searchParams.get("utm_campaign"),
           utmContent: url.searchParams.get("utm_content"),
           utmTerm: url.searchParams.get("utm_term"),
-          eventId: url.searchParams.get("eventId"),
+          eventId: timestamp || '',
         });
         console.log(body_rzp);
         const response = await fetch(
@@ -274,17 +282,39 @@
       }
     }
 
-    const country = (await (await fetch("https://ipapi.co/json/")).json())
+    let country = "IN";
+    try {
+      country = (await (await fetch("https://ipapi.co/json/")).json())
       .country;
+    } catch(err) {}
 
-    const purchaseButton = document.querySelector(".purchase-button");
-    if (purchaseButton) {
-      purchaseButton.onclick = (e) => {
-        e.preventDefault();
-        const modal = document.getElementById("formModal");
+    function checkURLAndShowForm() {
+      const url = new URL(window.location.href);
+      const hasBasicDetails = url.searchParams.get('basicDetails') === 'true';
+      const modal = document.getElementById("formModal");
+      
+      if (hasBasicDetails) {
         modal.classList.remove("wv-hidden");
-      };
+      } else {
+        modal.classList.add("wv-hidden");
+      }
     }
+    checkURLAndShowForm();
+    
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function() {
+      originalPushState.apply(this, arguments);
+      checkURLAndShowForm();
+    };
+    
+    history.replaceState = function() {
+      originalReplaceState.apply(this, arguments);
+      checkURLAndShowForm();
+    };
+    
+    window.addEventListener('popstate', checkURLAndShowForm);
 
     if (country === "IN") {
       userForm.onsubmit = async (e) => {
@@ -332,9 +362,13 @@
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
 
-        // Validate form fields and Collect utm params
+        
         if (validateForm(name, whatsapp, email)) {
           const url = new URL(window.location.href);
+          const timestamp = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('timestamp='))
+            ?.split('=')[1];
           const body_stripe = JSON.stringify({
             name: name,
             email: email,
@@ -344,7 +378,7 @@
             utmCampaign: url.searchParams.get("utm_campaign"),
             utmContent: url.searchParams.get("utm_content"),
             utmTerm: url.searchParams.get("utm_term"),
-            eventId: url.searchParams.get("eventId"),
+            eventId: timestamp || "",
           });
           const response = await fetch(
             `https://webveda-checkout.onrender.com/api/v1/stripepayment/${course_name}`,
