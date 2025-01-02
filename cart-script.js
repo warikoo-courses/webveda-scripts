@@ -216,15 +216,8 @@
       } else {
         document.getElementById("nameError").textContent = "";
       }
-
-      const phoneRegex = /^[6-9]\d{9}$/;
-      if (!phoneRegex.test(whatsapp)) {
-        document.getElementById("whatsappError").textContent =
-          "Please enter a valid 10-digit mobile number";
-        isValid = false;
-      } else {
-        document.getElementById("whatsappError").textContent = "";
-      }
+      
+      document.getElementById("whatsappError").textContent = "";
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
