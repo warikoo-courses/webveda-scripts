@@ -126,6 +126,11 @@
     }
   `;
 
+  function getlocalStorageCart() {
+    const cart = localStorage.getItem("cartItems");
+    return cart ? JSON.parse(cart) : [];
+  }
+
   // Create and insert style element
   const style = document.createElement("style");
   style.textContent = styleSheet;
@@ -140,7 +145,7 @@
   async function initializePaymentForm() {
     const url_str = window.location.href;
     const url = new URL(url_str);
-    const course_name = url.searchParams.get("course");
+    const course_name = getlocalStorageCart();
 
     // Get modal elements
     const modal = document.getElementById("formModal");
@@ -151,9 +156,11 @@
     function closeModal() {
       const url = new URL(window.location.href);
       const searchParams = new URLSearchParams(url.search);
-      searchParams.delete('basicDetails');
-      const newUrl = `${window.location.pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-      history.pushState({ path: newUrl }, '', newUrl);
+      searchParams.delete("basicDetails");
+      const newUrl = `${window.location.pathname}${
+        searchParams.toString() ? "?" + searchParams.toString() : ""
+      }`;
+      history.pushState({ path: newUrl }, "", newUrl);
     }
 
     // Add close button event listener
@@ -173,25 +180,26 @@
       }
     });
 
-    async function generatePayment(course_name, name) {
+    async function generatePayment(course_name_array, name) {
       try {
         const url = new URL(window.location.href);
         const timestamp = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('timestamp='))
-            ?.split('=')[1];
+          .split("; ")
+          .find((row) => row.startsWith("timestamp="))
+          ?.split("=")[1];
         const body_rzp = JSON.stringify({
           name: name,
+          course: course_name_array,
           utmSource: url.searchParams.get("utm_source"),
           utmMedium: url.searchParams.get("utm_medium"),
           utmCampaign: url.searchParams.get("utm_campaign"),
           utmContent: url.searchParams.get("utm_content"),
           utmTerm: url.searchParams.get("utm_term"),
-          eventId: timestamp || '',
+          eventId: timestamp || "",
         });
         console.log(body_rzp);
         const response = await fetch(
-          `https://webveda-checkout.onrender.com/api/v1/paymentGen/${course_name}`,
+          `https://webveda-checkout.onrender.com/api/v1/paymentGen`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -216,7 +224,7 @@
       } else {
         document.getElementById("nameError").textContent = "";
       }
-      
+
       document.getElementById("whatsappError").textContent = "";
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -231,61 +239,24 @@
       return isValid;
     }
 
-    function redirectCourse(course) {
-      const courses = {
-        LACB_Premium: ["thank-you-launching-a-courses-business", 2147],
-        LACB_Standard: ["thank-you-launching-a-courses-business", 2047],
-        LACB_Basic: ["thank-you-launching-a-courses-business", 1947],
-        MWAC_Premium: ["thank-you-make-writing-a-career", 1889],
-        MWAC_Standard: ["thank-you-make-writing-a-career", 1689],
-        MWAC_Basic: ["thank-you-make-writing-a-career", 1589],
-        TCOYM_Premium: ["thank-you-take-charge-of-your-money", 959],
-        TCOYM_Standard: ["thank-you-take-charge-of-your-money", 859],
-        TCOYM_Basic: ["thank-you-take-charge-of-your-money", 759],
-        TCOYT_Premium: ["time-management-thankyou", 699],
-        TCOYT_Standard: ["time-management-thankyou", 399],
-        TCOYT_Basic: ["time-management-thankyou", 299],
-        TUGTEC_Premium: ["communication-thankyou", 749],
-        TUGTEC_Standard: ["communication-thankyou", 649],
-        TUGTEC_Basic: ["communication-thankyou", 549],
-        HTY_Premium: ["youtube-thankyou", 1999],
-        HTY_Standard: ["youtube-thankyou", 1699],
-        HTY_Basic: ["youtube-thankyou", 1299],
-        HTI_Premium: ["instagram-thankyou", 1749],
-        HTI_Standard: ["instagram-thankyou", 1549],
-        HTI_Basic: ["instagram-thankyou", 1449],
-        HTL_Premium: ["thankyou-htl", 2359],
-        HTL_Standard: ["thankyou-htl", 2159],
-        HTL_Basic: ["thankyou-htl", 1959],
-        TCGTSU_English: ["starting-up-thankyou", 1499],
-        TCGTSU_Hindi: ["starting-up-thankyou", 1399],
-        TCGTSU_Both: ["starting-up-thankyou", 1499],
-        TMFS_Premium: ["thank-you-time-management-for-students", 499],
-        TMFS_Standard: ["thank-you-time-management-for-students", 479],
-        TMFS_Basic: ["thank-you-time-management-for-students", 429],
-      };
-
-      if (courses[course]) {
-        const [link, amt] = courses[course];
-        window.location.href = `/${link}?amount=${amt}&${new URLSearchParams(
-          window.location.search
-        )}`;
-      } else {
-        console.log("Course not found.");
-      }
+    function redirectCourse(course_array, amount) {
+      const link = "final-thankyou";
+      const course_str = course_array.join("-");
+      window.location.href = `/${link}?amount=${amount}&course=${course_str}&${new URLSearchParams(
+        window.location.search
+      )}`;
     }
 
     let country = "IN";
     try {
-      country = (await (await fetch("https://ipapi.co/json/")).json())
-      .country;
-    } catch(err) {}
+      country = (await (await fetch("https://ipapi.co/json/")).json()).country;
+    } catch (err) {}
 
     function checkURLAndShowForm() {
       const url = new URL(window.location.href);
-      const hasBasicDetails = url.searchParams.get('basicDetails') === 'true';
+      const hasBasicDetails = url.searchParams.get("basicDetails") === "true";
       const modal = document.getElementById("formModal");
-      
+
       if (hasBasicDetails) {
         modal.classList.remove("wv-hidden");
       } else {
@@ -293,21 +264,21 @@
       }
     }
     checkURLAndShowForm();
-    
+
     const originalPushState = history.pushState;
     const originalReplaceState = history.replaceState;
-    
-    history.pushState = function() {
+
+    history.pushState = function () {
       originalPushState.apply(this, arguments);
       checkURLAndShowForm();
     };
-    
-    history.replaceState = function() {
+
+    history.replaceState = function () {
       originalReplaceState.apply(this, arguments);
       checkURLAndShowForm();
     };
-    
-    window.addEventListener('popstate', checkURLAndShowForm);
+
+    window.addEventListener("popstate", checkURLAndShowForm);
 
     if (country === "IN") {
       userForm.onsubmit = async (e) => {
@@ -329,11 +300,8 @@
               email: email,
               contact: whatsapp,
             },
-            handler: (res) => {
-              const course_param = new URLSearchParams(
-                window.location.search
-              ).get("course");
-              course_param ? redirectCourse(course_param) : alert("ERROR");
+            handler: () => {
+              redirectCourse(course_name, paymentArray[1]);
             },
             theme: { color: "#3399cc" },
           });
@@ -355,17 +323,17 @@
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
 
-        
         if (validateForm(name, whatsapp, email)) {
           const url = new URL(window.location.href);
           const timestamp = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('timestamp='))
-            ?.split('=')[1];
+            .split("; ")
+            .find((row) => row.startsWith("timestamp="))
+            ?.split("=")[1];
           const body_stripe = JSON.stringify({
             name: name,
             email: email,
             phone: whatsapp,
+            course_array: course_name,
             utmSource: url.searchParams.get("utm_source"),
             utmMedium: url.searchParams.get("utm_medium"),
             utmCampaign: url.searchParams.get("utm_campaign"),
@@ -374,7 +342,7 @@
             eventId: timestamp || "",
           });
           const response = await fetch(
-            `https://webveda-checkout.onrender.com/api/v1/stripepayment/${course_name}`,
+            `https://webveda-checkout.onrender.com/api/v1/stripepayment/`,
             {
               method: "POST",
               headers: {
