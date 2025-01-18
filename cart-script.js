@@ -143,6 +143,13 @@
 
   // Initialize payment form functionality
   async function initializePaymentForm() {
+    let total = 0;
+    const prices = document.getElementsByClassName("purchase-money-cart"); //₹100 is price format
+    for (let i = 0; i < prices.length; i++) {
+      total += parseInt(prices[i].textContent.replace("₹", ""));
+    }
+    document.getElementById("purchase-total-cart").innerText = `₹${total}`;
+
     const url_str = window.location.href;
     const url = new URL(url_str);
     const course_name = getlocalStorageCart();
