@@ -128,7 +128,11 @@
 
   function getlocalStorageCart() {
     const cart = localStorage.getItem("cartItems");
-    return cart ? JSON.parse(cart) : [];
+    if (!cart) return [];
+    const parsedCart = JSON.parse(cart);
+    const uniqueCart = [...new Set(parsedCart)];
+    console.log(uniqueCart);
+    return uniqueCart;
   }
 
   // Create and insert style element
