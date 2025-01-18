@@ -1,4 +1,17 @@
 (function () {
+  let total = 0;
+  const prices = document.getElementsByClassName("purchase-money-cart");
+  console.log(prices);
+  for (let i = 0; i < prices.length; i++) {
+    const priceText = prices[i].querySelector("p").textContent;
+    const price = parseFloat(priceText.replace(/[^0-9.-]+/g, ""));
+    total += price;
+  }
+  console.log(document.getElementById("purchase-total-cart").firstChild);
+  document.getElementById(
+    "purchase-total-cart"
+  ).firstChild.textContent = `₹${total}`;
+
   const razorpayScript = document.createElement("script");
   razorpayScript.src = "https://checkout.razorpay.com/v1/checkout.js";
   document.head.appendChild(razorpayScript);
@@ -143,19 +156,6 @@
 
   // Initialize payment form functionality
   async function initializePaymentForm() {
-    let total = 0;
-    const prices = document.getElementsByClassName("purchase-money-cart");
-    console.log(prices);
-    for (let i = 0; i < prices.length; i++) {
-      const priceText = prices[i].querySelector("p").textContent;
-      const price = parseFloat(priceText.replace(/[^0-9.-]+/g, ""));
-      total += price;
-    }
-    console.log(document.getElementById("purchase-total-cart").firstChild);
-    document.getElementById(
-      "purchase-total-cart"
-    ).firstChild.textContent = `₹${total}`;
-
     const url_str = window.location.href;
     const url = new URL(url_str);
     const course_name = getlocalStorageCart();
