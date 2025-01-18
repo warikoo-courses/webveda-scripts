@@ -144,11 +144,17 @@
   // Initialize payment form functionality
   async function initializePaymentForm() {
     let total = 0;
-    const prices = document.getElementsByClassName("purchase-money-cart"); //₹100 is price format
+    const prices = document.getElementsByClassName("purchase-money-cart");
+    console.log(prices);
     for (let i = 0; i < prices.length; i++) {
-      total += parseInt(prices[i].textContent.replace("₹", ""));
+      const priceText = prices[i].querySelector("p").textContent;
+      const price = parseFloat(priceText.replace(/[^0-9.-]+/g, ""));
+      total += price;
     }
-    document.getElementById("purchase-total-cart").innerText = `₹${total}`;
+    console.log(document.getElementById("purchase-total-cart").firstChild);
+    document.getElementById(
+      "purchase-total-cart"
+    ).firstChild.textContent = `₹${total}`;
 
     const url_str = window.location.href;
     const url = new URL(url_str);
