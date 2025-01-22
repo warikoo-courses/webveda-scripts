@@ -246,9 +246,9 @@
     function redirectCourse(course_array, amount) {
       const link = "final-thankyou";
       const course_str = course_array.join("-");
-      window.location.href = `/${link}?amount=${amount}&course=${course_str}&${new URLSearchParams(
-        window.location.search
-      )}`;
+      window.location.href = `/${link}?amount=${
+        amount / 100
+      }&course=${course_str}&${new URLSearchParams(window.location.search)}`;
     }
 
     let country = "IN";
