@@ -243,12 +243,19 @@
       return isValid;
     }
 
-    function redirectCourse(course_array, amount) {
+    function redirectCourse(course_array, amount, name, email, phone) {
       const link = "final-thankyou";
+
+      const sanitizedName = name.trim().replace(/\s+/g, "");
+      const sanitizedEmail = encodeURIComponent(email.trim());
+      const sanitizedPhone = phone.replace(/[^0-9]/g, "");
+
       const course_str = course_array.join("-");
       window.location.href = `/${link}?amount=${
         amount / 100
-      }&course=${course_str}&${new URLSearchParams(window.location.search)}`;
+      }&course=${course_str}&name=${sanitizedName}&email=${sanitizedEmail}&phone_number=${sanitizedPhone}&${new URLSearchParams(
+        window.location.search
+      )}`;
     }
 
     let country = "IN";
@@ -305,7 +312,13 @@
               contact: whatsapp,
             },
             handler: () => {
-              redirectCourse(course_name, paymentArray[1]);
+              redirectCourse(
+                course_name,
+                paymentArray[1],
+                name,
+                email,
+                whatsapp
+              );
             },
             theme: { color: "#3399cc" },
           });
