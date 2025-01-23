@@ -298,7 +298,7 @@
         const name = document.getElementById("name").value.trim();
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
-        if (course_name.length <= 1) {
+        if (course_name.length < 1) {
           return;
         }
         const paymentArray = await generatePayment(course_name, name);
