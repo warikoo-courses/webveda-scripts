@@ -260,7 +260,11 @@
 
     let country = "IN";
     try {
-      country = (await (await fetch("https://ipapi.co/json/")).json()).country;
+      country = (
+        await (
+          await fetch("https://webveda-checkout.onrender.com/ip_region")
+        ).json()
+      ).country;
     } catch (err) {}
 
     function checkURLAndShowForm() {
