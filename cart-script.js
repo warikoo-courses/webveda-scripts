@@ -253,7 +253,7 @@
       const course_str = course_array.join("-");
       window.location.href = `/${link}?amount=${
         amount / 100
-      }&course=${course_str}&name=${sanitizedName}&email=${sanitizedEmail}&phone_number=${sanitizedPhone}&${new URLSearchParams(
+      }&course=${course_str}&name=${sanitizedName}&email=${sanitizedEmail}&phone_number=${sanitizedPhone}&currency=INR&${new URLSearchParams(
         window.location.search
       )}`;
     }
