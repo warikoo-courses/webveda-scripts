@@ -262,7 +262,9 @@
     try {
       country = (
         await (
-          await fetch("https://webveda-checkout.onrender.com/ip_region")
+          await fetch(
+            "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
+          )
         ).json()
       ).country;
     } catch (err) {}
