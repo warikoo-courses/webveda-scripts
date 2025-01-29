@@ -260,13 +260,18 @@
 
     let country = "IN";
     try {
-      country = (
-        await (
-          await fetch(
-            "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
-          )
-        ).json()
-      ).country;
+      const data = await (
+        await fetch(
+          "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
+        )
+      ).json();
+      country = data.country;
+      if (data.city && data.region && data.country && data.postal) {
+        document.cookie = `city=${data.city}; path=/; max-age=1800`;
+        document.cookie = `region=${data.region}; path=/; max-age=1800`;
+        document.cookie = `country=${data.country}; path=/; max-age=1800`;
+        document.cookie = `postal=${data.postal}; path=/; max-age=1800`;
+      }
     } catch (err) {}
 
     function checkURLAndShowForm() {
