@@ -184,16 +184,15 @@
       }
     });
 
-    async function generatePayment(course_name_array, name) {
+    async function generatePayment(course_name_array, name, ip_data) {
       try {
-
         async function getIPAddress() {
           try {
-            const response = await fetch('https://api.ipify.org?format=json');
+            const response = await fetch("https://api.ipify.org?format=json");
             const data = await response.json();
             return data.ip;
           } catch (error) {
-            return '';
+            return "";
           }
         }
 
@@ -224,7 +223,8 @@
           fbc: fbc || "",
           fbp: fbp || "",
           ipAddress: ipAddress || "",
-          userAgent: userAgent || ""
+          userAgent: userAgent || "",
+          ip_data: ip_data || "",
         });
         console.log(body_rzp);
         const response = await fetch(
@@ -283,18 +283,19 @@
     }
 
     let country = "IN";
+    let ip_data = null;
     try {
-      const data = await (
+      ip_data = await (
         await fetch(
           "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
         )
       ).json();
-      country = data.country;
-      if (data.city && data.region && data.country && data.postal) {
-        document.cookie = `city=${data.city}; path=/; max-age=1800`;
-        document.cookie = `region=${data.region}; path=/; max-age=1800`;
-        document.cookie = `country=${data.country}; path=/; max-age=1800`;
-        document.cookie = `postal=${data.postal}; path=/; max-age=1800`;
+      country = ip_data.country;
+      if (ip_data.city && ip_data.region && ip_data.country && ip_data.postal) {
+        document.cookie = `city=${ip_data.city}; path=/; max-age=1800`;
+        document.cookie = `region=${ip_data.region}; path=/; max-age=1800`;
+        document.cookie = `country=${ip_data.country}; path=/; max-age=1800`;
+        document.cookie = `postal=${ip_data.postal}; path=/; max-age=1800`;
       }
     } catch (err) {}
 
@@ -336,8 +337,8 @@
         if (course_name.length < 1) {
           return;
         }
-        const paymentArray = await generatePayment(course_name, name);
-
+        const paymentArray = await generatePayment(course_name, name, ip_data);
+        console.log(ip_data);
         if (validateForm(name, whatsapp, email)) {
           const rzp1 = new Razorpay({
             key: "rzp_live_YZSHqiTnfwaXXt",
