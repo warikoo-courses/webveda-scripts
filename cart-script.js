@@ -186,11 +186,32 @@
 
     async function generatePayment(course_name_array, name) {
       try {
+
+        async function getIPAddress() {
+          try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+          } catch (error) {
+            return '';
+          }
+        }
+
         const url = new URL(window.location.href);
         const timestamp = document.cookie
           .split("; ")
           .find((row) => row.startsWith("timestamp="))
           ?.split("=")[1];
+        const fbc = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("_fbc="))
+          ?.split("=")[1];
+        const fbp = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("_fbp="))
+          ?.split("=")[1];
+        const ipAddress = await getIPAddress();
+        const userAgent = navigator.userAgent;
         const body_rzp = JSON.stringify({
           name: name,
           course: course_name_array,
@@ -200,6 +221,10 @@
           utmContent: url.searchParams.get("utm_content"),
           utmTerm: url.searchParams.get("utm_term"),
           eventId: timestamp || "",
+          fbc: fbc || "",
+          fbp: fbp || "",
+          ipAddress: ipAddress || "",
+          userAgent: userAgent || ""
         });
         console.log(body_rzp);
         const response = await fetch(
@@ -207,7 +232,6 @@
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            //pass the utm params here
             body: body_rzp,
           }
         );
