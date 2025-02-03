@@ -188,11 +188,19 @@
       try {
         async function getIPAddress() {
           try {
-            const response = await fetch("https://api.ipify.org?format=json");
-            const data = await response.json();
-            return data.ip;
+            // Try IPv6 first
+            const ipv6Response = await fetch("https://api6.ipify.org/?format=json");
+            const ipv6Data = await ipv6Response.json();
+            return ipv6Data.ip;
           } catch (error) {
-            return "";
+            try {
+              // Fall back to IPv4 if IPv6 request failed
+              const ipv4Response = await fetch("https://api.ipify.org?format=json");
+              const ipv4Data = await ipv4Response.json();
+              return ipv4Data.ip;
+            } catch (error) {
+              return "";
+            }
           }
         }
 
