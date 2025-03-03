@@ -181,15 +181,7 @@
     const url_str = window.location.href;
     const url = new URL(url_str);
     const course_name = getlocalStorageCart();
-
-    //Listen for button click
     const submitBtn = document.querySelector(".wv-submit-btn");
-    submitBtn.addEventListener("click", () => {
-      submitBtn.disabled = true;
-      submitBtn.classList.add("loading");
-      submitBtn.textContent = "Loading...";
-    });
-
     // Get modal elements
     const modal = document.getElementById("formModal");
     const closeBtn = modal.querySelector(".wv-close-btn");
@@ -228,13 +220,17 @@
         async function getIPAddress() {
           try {
             // Try IPv6 first
-            const ipv6Response = await fetch("https://api6.ipify.org/?format=json");
+            const ipv6Response = await fetch(
+              "https://api6.ipify.org/?format=json"
+            );
             const ipv6Data = await ipv6Response.json();
             return ipv6Data.ip;
           } catch (error) {
             try {
               // Fall back to IPv4 if IPv6 request failed
-              const ipv4Response = await fetch("https://api.ipify.org?format=json");
+              const ipv4Response = await fetch(
+                "https://api.ipify.org?format=json"
+              );
               const ipv4Data = await ipv4Response.json();
               return ipv4Data.ip;
             } catch (error) {
@@ -377,6 +373,9 @@
     if (country === "IN") {
       userForm.onsubmit = async (e) => {
         e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.classList.add("loading");
+        submitBtn.textContent = "Loading...";
 
         const name = document.getElementById("name").value.trim();
         const whatsapp = document.getElementById("whatsapp").value.trim();
