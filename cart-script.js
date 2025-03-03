@@ -124,6 +124,37 @@
       text-align: center;
       color: #333;
     }
+    .wv-submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      filter: grayscale(100%);
+    }
+    .wv-submit-btn.loading {
+      position: relative;
+    }
+
+    .wv-submit-btn.loading::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #fff;
+      border-top: 2px solid #ccc;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
   `;
 
   function getlocalStorageCart() {
@@ -150,6 +181,14 @@
     const url_str = window.location.href;
     const url = new URL(url_str);
     const course_name = getlocalStorageCart();
+
+    //Listen for button click
+    const submitBtn = document.querySelector(".wv-submit-btn");
+    submitBtn.addEventListener("click", () => {
+      submitBtn.disabled = true;
+      submitBtn.classList.add("loading");
+      submitBtn.textContent = "Loading...";
+    });
 
     // Get modal elements
     const modal = document.getElementById("formModal");
