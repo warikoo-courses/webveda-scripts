@@ -132,24 +132,45 @@ const init = () => {
                   if (video) {
                     let startTime = 0;
                     let watchDuration = 0;
+                    let totalDuration = 0;
+
+                    // Get video duration once metadata is loaded
+                    video.addEventListener("loadedmetadata", () => {
+                      totalDuration = video.duration;
+                    });
 
                     video.addEventListener("play", () => {
                       startTime = video.currentTime;
                     });
 
-                    video.addEventListener("pause", () => {
+                    const trackVideoView = () => {
                       watchDuration = video.currentTime - startTime;
                       webengage.track("Homepage Video Viewed", {
                         Duration: watchDuration,
                       });
                       console.log("Event Fired");
+                    };
+
+                    video.addEventListener("pause", trackVideoView);
+                    video.addEventListener("ended", trackVideoView);
+
+                    // Track when video is unmounted
+                    const videoObserver = new MutationObserver((mutations) => {
+                      mutations.forEach((mutation) => {
+                        if (mutation.removedNodes) {
+                          mutation.removedNodes.forEach((node) => {
+                            if (node === video || node.contains(video)) {
+                              trackVideoView();
+                              videoObserver.disconnect();
+                            }
+                          });
+                        }
+                      });
                     });
 
-                    video.addEventListener("ended", () => {
-                      watchDuration = video.currentTime - startTime;
-                      webengage.track("Homepage Video Viewed", {
-                        Duration: watchDuration,
-                      });
+                    videoObserver.observe(heroVideo.parentNode, {
+                      childList: true,
+                      subtree: true,
                     });
 
                     observer.disconnect();
