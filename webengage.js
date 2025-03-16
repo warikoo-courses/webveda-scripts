@@ -53,7 +53,7 @@ webengage.init("in~~47b66760");
 document.head.appendChild(webengageScript);
 //WebEngage -- End
 
-const course_data = [
+window.course_data = [
   {
     Title: "How To YouTube",
     Category: "Growth",
