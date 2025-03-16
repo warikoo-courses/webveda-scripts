@@ -115,6 +115,7 @@ const init = () => {
 
       // Homepage Video Viewed
       const observeVideo = () => {
+        console.log("observeVideo");
         const observer = new MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
             if (mutation.addedNodes) {
@@ -131,6 +132,9 @@ const init = () => {
                   video.addEventListener("pause", () => {
                     watchDuration = video.currentTime - startTime;
                     webengage.track("Homepage Video Viewed", {
+                      Duration: watchDuration,
+                    });
+                    console.log("Homepage Video Viewed", {
                       Duration: watchDuration,
                     });
                   });
