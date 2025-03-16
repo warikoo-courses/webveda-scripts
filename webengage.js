@@ -53,6 +53,24 @@ webengage.init("in~~47b66760");
 document.head.appendChild(webengageScript);
 //WebEngage -- End
 
+const course_data = [
+  {
+    Title: "How To YouTube",
+    Category: "Growth",
+    Link: "https://digital-reservation-141130.framer.app/courses/how-to-youtube-by-webveda",
+    Course_id: "WV001",
+    Source: null,
+    Campaign: null,
+    Medium: null,
+    is_Login: true, //TODO: Ask about this
+    Language: ["English", "Hindi"],
+    Duration: 20,
+    Rating: 4.95,
+    Student_Enrolled_Count: 27000,
+    No_Of_Modules: 10,
+  },
+];
+
 const getCurrentUnixTimestamp = () => {
   return Math.floor(Date.now() / 1000).toString();
 };
@@ -65,7 +83,9 @@ const init = () => {
   ) {
     // Home Page
     if (window.location.pathname === "/") {
+      // Home Page Viewed
       window.addEventListener("DOMContentLoaded", () => {
+        console.log("Home Page Viewed");
         const utm_source = window.location.search.split("utm_source=")[1];
         const utm_medium = window.location.search.split("utm_medium=")[1];
         const utm_campaign = window.location.search.split("utm_campaign=")[1];
@@ -73,8 +93,122 @@ const init = () => {
           Source: utm_source,
           Medium: utm_medium,
           Campaign: utm_campaign,
+          is_Login: false,
         });
       });
+
+      // Login Button Clicked
+      const loginButton = document.getElementById("login-button");
+      loginButton.addEventListener("click", () => {
+        webengage.track("Login Click");
+      });
+
+      //Navbar items
+      const navbarItems = document.getElementsByClassName("navbar-item");
+      for (let i = 0; i < navbarItems.length; i++) {
+        navbarItems[i].addEventListener("click", () => {
+          webengage.track("Navbar Item Clicked", {
+            Selection: navbarItems[i].textContent,
+          });
+        });
+      }
+
+      // Homepage Video Viewed
+      const observeVideo = () => {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.addedNodes) {
+              mutation.addedNodes.forEach((node) => {
+                if (node.id === "heroVideo") {
+                  const video = node;
+                  let startTime = 0;
+                  let watchDuration = 0;
+
+                  video.addEventListener("play", () => {
+                    startTime = video.currentTime;
+                  });
+
+                  video.addEventListener("pause", () => {
+                    watchDuration = video.currentTime - startTime;
+                    webengage.track("Homepage Video Viewed", {
+                      Duration: watchDuration,
+                    });
+                  });
+
+                  video.addEventListener("ended", () => {
+                    watchDuration = video.currentTime - startTime;
+                    webengage.track("Homepage Video Viewed", {
+                      Duration: watchDuration,
+                    });
+                  });
+
+                  observer.disconnect();
+                }
+              });
+            }
+          });
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+      };
+      observeVideo();
+
+      // WA Support Clicked
+      const waSupportButtons = document.getElementsByClassName("WAsupport");
+      for (let i = 0; i < waSupportButtons.length; i++) {
+        waSupportButtons[i].addEventListener("click", () => {
+          webengage.track("WA Support Clicked");
+        });
+      }
+    }
+
+    //CoursePages
+    if (window.location.pathname.includes("/course")) {
+      //Course Page Viewed
+      const observeVideo = () => {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.addedNodes) {
+              mutation.addedNodes.forEach((node) => {
+                if (node.id === "heroVideo") {
+                  const video = node;
+                  let startTime = 0;
+                  let watchDuration = 0;
+
+                  video.addEventListener("play", () => {
+                    startTime = video.currentTime;
+                  });
+
+                  video.addEventListener("pause", () => {
+                    watchDuration = video.currentTime - startTime;
+                    webengage.track("Homepage Video Viewed", {
+                      Duration: watchDuration,
+                    });
+                  });
+
+                  video.addEventListener("ended", () => {
+                    watchDuration = video.currentTime - startTime;
+                    webengage.track("Homepage Video Viewed", {
+                      Duration: watchDuration,
+                    });
+                  });
+
+                  observer.disconnect();
+                }
+              });
+            }
+          });
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+      };
+      observeVideo();
     }
 
     // Cart Page
@@ -89,11 +223,10 @@ const init = () => {
 
         console.log(formDetails);
 
+        webengage.user.login();
         webengage.user.setAttribute("we_first_name", formDetails.name);
         webengage.user.setAttribute("we_phone", formDetails.whatsapp);
         webengage.user.setAttribute("we_email", formDetails.email);
-
-        webengage.user.login(getCurrentUnixTimestamp());
       });
     }
   }
