@@ -121,6 +121,7 @@ const init = () => {
               mutation.addedNodes.forEach((node) => {
                 if (node.id === "overlay") {
                   const video = node.querySelector("video");
+                  console.log("video", video);
                   if (video) {
                     let startTime = 0;
                     let watchDuration = 0;
@@ -134,6 +135,7 @@ const init = () => {
                       webengage.track("Homepage Video Viewed", {
                         Duration: watchDuration,
                       });
+                      console.log("Event Fired");
                     });
 
                     video.addEventListener("ended", () => {
