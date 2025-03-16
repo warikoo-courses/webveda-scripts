@@ -68,8 +68,38 @@ window.course_data = [
     Rating: 4.95,
     Student_Enrolled_Count: 27000,
     No_Of_Modules: 10,
+    Plan_Cost: [1299, 1699, 1999],
   },
 ];
+
+function fetchParams(type) {
+  const params = new URLSearchParams(window.location.search);
+  if (type === "source") {
+    return params.get("utm_source") || "null";
+  } else if (type === "campaign") {
+    return params.get("utm_campaign") || "null";
+  } else if (type === "medium") {
+    return params.get("utm_medium") || "null";
+  } else {
+    console.error("Invalid Arguments");
+    return null;
+  }
+}
+
+function getCourseFromURL(courseData) {
+  const currentURL = window.location.href;
+
+  return (
+    courseData.find((course) => {
+      // Check if the course link matches the current URL (excluding query params)
+      console.log(currentURL, course.Link);
+      if (!course || !course.Link) return false;
+      const isLinkMatch = currentURL.startsWith(course.Link);
+
+      return isLinkMatch;
+    }) || null
+  );
+}
 
 const getCurrentUnixTimestamp = () => {
   return Math.floor(Date.now() / 1000).toString();
@@ -146,7 +176,7 @@ const init = () => {
                     const trackVideoView = () => {
                       watchDuration = video.currentTime - startTime;
                       webengage.track("Homepage Video Viewed", {
-                        Duration: watchDuration,
+                        Duration_viewed: watchDuration,
                       });
                       console.log("Event Fired");
                     };
@@ -199,48 +229,173 @@ const init = () => {
 
     //CoursePages
     if (window.location.pathname.includes("/course")) {
-      //Course Page Viewed
+      //Course Hero Video Viewed
       const observeVideo = () => {
+        const overlay = document.getElementById("overlay");
         const observer = new MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
             if (mutation.addedNodes) {
+              console.log("mutation.addedNodes", mutation.addedNodes);
               mutation.addedNodes.forEach((node) => {
-                if (node.id === "heroVideo") {
-                  const video = node;
-                  let startTime = 0;
-                  let watchDuration = 0;
+                // Check if node itself or any of its children has heroVideo id
+                const heroVideo =
+                  node.id === "heroVideo"
+                    ? node
+                    : node.querySelector("#heroVideo");
+                if (heroVideo) {
+                  const video = heroVideo.querySelector("video");
+                  console.log("video", video);
+                  if (video) {
+                    let startTime = 0;
+                    let watchDuration = 0;
+                    let totalDuration = 0;
 
-                  video.addEventListener("play", () => {
-                    startTime = video.currentTime;
-                  });
-
-                  video.addEventListener("pause", () => {
-                    watchDuration = video.currentTime - startTime;
-                    webengage.track("Homepage Video Viewed", {
-                      Duration: watchDuration,
+                    // Get video duration once metadata is loaded
+                    video.addEventListener("loadedmetadata", () => {
+                      totalDuration = video.duration;
                     });
-                  });
 
-                  video.addEventListener("ended", () => {
-                    watchDuration = video.currentTime - startTime;
-                    webengage.track("Homepage Video Viewed", {
-                      Duration: watchDuration,
+                    video.addEventListener("play", () => {
+                      startTime = video.currentTime;
                     });
-                  });
 
-                  observer.disconnect();
+                    const trackVideoView = () => {
+                      watchDuration = video.currentTime - startTime;
+                      const course = getCourseFromURL(window.course_data);
+                      webengage.track("Course Trailer Played", {
+                        Duration: watchDuration,
+                        Course_id: course.Course_id,
+                        Category: course.Category,
+                        Link: course.Link,
+                        Title: course.Title,
+                        Language: course.Language,
+                        Rating: course.Rating,
+                        Student_Enrolled_Count: course.Student_Enrolled_Count,
+                        No_Of_Modules: course.No_Of_Modules,
+                      });
+                      console.log("Event Fired");
+                    };
+
+                    video.addEventListener("pause", trackVideoView);
+                    video.addEventListener("ended", trackVideoView);
+
+                    // Track when video is unmounted
+                    const videoObserver = new MutationObserver((mutations) => {
+                      mutations.forEach((mutation) => {
+                        if (mutation.removedNodes) {
+                          mutation.removedNodes.forEach((node) => {
+                            if (node === video || node.contains(video)) {
+                              trackVideoView();
+                              videoObserver.disconnect();
+                            }
+                          });
+                        }
+                      });
+                    });
+
+                    videoObserver.observe(heroVideo.parentNode, {
+                      childList: true,
+                      subtree: true,
+                    });
+
+                    observer.disconnect();
+                  }
                 }
               });
             }
           });
         });
 
-        observer.observe(document.body, {
+        observer.observe(overlay, {
           childList: true,
           subtree: true,
         });
       };
       observeVideo();
+
+      //Course Results Video Viewed
+      const observeResultsVideo = () => {
+        const overlay = document.getElementById("overlay");
+        const results_observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.addedNodes) {
+              console.log("mutation.addedNodes", mutation.addedNodes);
+              mutation.addedNodes.forEach((node) => {
+                // Check if node itself or any of its children has heroVideo id
+                const heroVideo =
+                  node.id === "resultVideo"
+                    ? node
+                    : node.querySelector("#resultVideo");
+                if (heroVideo) {
+                  const video = heroVideo.querySelector("video");
+                  console.log("video", video);
+                  if (video) {
+                    let startTime = 0;
+                    let watchDuration = 0;
+                    let totalDuration = 0;
+
+                    // Get video duration once metadata is loaded
+                    video.addEventListener("loadedmetadata", () => {
+                      totalDuration = video.duration;
+                    });
+
+                    video.addEventListener("play", () => {
+                      startTime = video.currentTime;
+                    });
+
+                    const trackVideoView = () => {
+                      watchDuration = video.currentTime - startTime;
+                      const course = getCourseFromURL(window.course_data);
+                      webengage.track("Course Results Video Viewed", {
+                        Duration: watchDuration,
+                        Course_id: course.Course_id,
+                        Category: course.Category,
+                        Link: course.Link,
+                        Title: course.Title,
+                        Language: course.Language,
+                        Rating: course.Rating,
+                        Student_Enrolled_Count: course.Student_Enrolled_Count,
+                        No_Of_Modules: course.No_Of_Modules,
+                      });
+                      console.log("Event Fired");
+                    };
+
+                    video.addEventListener("pause", trackVideoView);
+                    video.addEventListener("ended", trackVideoView);
+
+                    // Track when video is unmounted
+                    const videoObserver = new MutationObserver((mutations) => {
+                      mutations.forEach((mutation) => {
+                        if (mutation.removedNodes) {
+                          mutation.removedNodes.forEach((node) => {
+                            if (node === video || node.contains(video)) {
+                              trackVideoView();
+                              videoObserver.disconnect();
+                            }
+                          });
+                        }
+                      });
+                    });
+
+                    videoObserver.observe(heroVideo.parentNode, {
+                      childList: true,
+                      subtree: true,
+                    });
+
+                    results_observer.disconnect();
+                  }
+                }
+              });
+            }
+          });
+        });
+
+        results_observer.observe(overlay, {
+          childList: true,
+          subtree: true,
+        });
+      };
+      observeResultsVideo();
     }
 
     // Cart Page
