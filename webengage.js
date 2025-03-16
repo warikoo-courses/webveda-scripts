@@ -58,19 +58,25 @@ const getCurrentUnixTimestamp = () => {
 };
 
 const init = () => {
-  if (window.location === "https://www.webveda.com/cart") {
-    const form = document.getElementById("userDetailsForm");
-    const formDetails = {};
+  if (
+    window.location.host === "www.webveda.com" ||
+    window.location.host === "webveda.com" ||
+    window.location.host === "digital-reservation-141130.framer.app"
+  ) {
+    if (window.location.pathname === "/cart") {
+      const form = document.getElementById("userDetailsForm");
+      const formDetails = {};
 
-    form.addEventListener("submit", (e) => {
-      const formData = new FormData(form);
+      form.addEventListener("submit", (e) => {
+        const formData = new FormData(form);
 
-      formDetails.name = formData.get("name").trim();
-      formDetails.whatsapp = formData.get("whatsapp").trim();
-      formDetails.email = formData.get("email").trim();
+        formDetails.name = formData.get("name").trim();
+        formDetails.whatsapp = formData.get("whatsapp").trim();
+        formDetails.email = formData.get("email").trim();
 
-      console.log(formDetails);
-    });
+        console.log(formDetails);
+      });
+    }
   }
 };
 
