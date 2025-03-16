@@ -54,7 +54,7 @@ document.head.appendChild(webengageScript);
 //WebEngage -- End
 
 const getCurrentUnixTimestamp = () => {
-  return Math.floor(Date.now() / 1000);
+  return Math.floor(Date.now() / 1000).toString();
 };
 
 const init = () => {
@@ -68,13 +68,17 @@ const init = () => {
       const formDetails = {};
 
       form.addEventListener("submit", (e) => {
-        const formData = new FormData(form);
-
-        formDetails.name = formData.get("name").trim();
-        formDetails.whatsapp = formData.get("whatsapp").trim();
-        formDetails.email = formData.get("email").trim();
+        formDetails.name = document.getElementById("name").value.trim();
+        formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
+        formDetails.email = document.getElementById("email").value.trim();
 
         console.log(formDetails);
+
+        webengage.user.setAttribute("we_first_name", formDetails.name);
+        webengage.user.setAttribute("we_phone", formDetails.whatsapp);
+        webengage.user.setAttribute("we_email", formDetails.email);
+
+        webengage.user.login(getCurrentUnixTimestamp());
       });
     }
   }
