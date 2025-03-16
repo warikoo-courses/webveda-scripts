@@ -414,6 +414,22 @@ const init = () => {
         webengage.user.setAttribute("we_first_name", formDetails.name);
         webengage.user.setAttribute("we_phone", formDetails.whatsapp);
         webengage.user.setAttribute("we_email", formDetails.email);
+        const price1 =
+          document.getElementById("testing123").firstElementChild.textContent;
+        const course1 = document
+          .getElementById("cartItem")
+          .firstElementChild.getAttribute("data-framer-name");
+        console.log("test", price1, course1);
+        webengage.track("Purchase Initiated", {
+          Title: course1.split("_")[0],
+          Purchase_Link: currentUrl2.toString(),
+          Plan_Name: course1.split("_")[1],
+          Plan_Cost: price1,
+          Source: fetchParams("source"),
+          Medium: fetchParams("medium"),
+          Campaign: fetchParams("campaign"),
+          Amount: price1,
+        });
       });
     }
   }
