@@ -120,32 +120,35 @@ const init = () => {
             if (mutation.addedNodes) {
               mutation.addedNodes.forEach((node) => {
                 if (node.id === "overlay") {
-                  const video = node.querySelector("video");
-                  console.log("video", video);
-                  if (video) {
-                    let startTime = 0;
-                    let watchDuration = 0;
+                  const heroVideoDiv = node.querySelector("#heroVideo");
+                  if (heroVideoDiv) {
+                    const video = heroVideoDiv.querySelector("video");
+                    console.log("video", video);
+                    if (video) {
+                      let startTime = 0;
+                      let watchDuration = 0;
 
-                    video.addEventListener("play", () => {
-                      startTime = video.currentTime;
-                    });
-
-                    video.addEventListener("pause", () => {
-                      watchDuration = video.currentTime - startTime;
-                      webengage.track("Homepage Video Viewed", {
-                        Duration: watchDuration,
+                      video.addEventListener("play", () => {
+                        startTime = video.currentTime;
                       });
-                      console.log("Event Fired");
-                    });
 
-                    video.addEventListener("ended", () => {
-                      watchDuration = video.currentTime - startTime;
-                      webengage.track("Homepage Video Viewed", {
-                        Duration: watchDuration,
+                      video.addEventListener("pause", () => {
+                        watchDuration = video.currentTime - startTime;
+                        webengage.track("Homepage Video Viewed", {
+                          Duration: watchDuration,
+                        });
+                        console.log("Event Fired");
                       });
-                    });
 
-                    observer.disconnect();
+                      video.addEventListener("ended", () => {
+                        watchDuration = video.currentTime - startTime;
+                        webengage.track("Homepage Video Viewed", {
+                          Duration: watchDuration,
+                        });
+                      });
+
+                      observer.disconnect();
+                    }
                   }
                 }
               });
