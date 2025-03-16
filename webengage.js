@@ -115,8 +115,8 @@ const init = () => {
 
       // Homepage Video Viewed
       const observeVideo = () => {
-        console.log("observeVideo");
         const observer = new MutationObserver((mutations) => {
+          console.log("mutations", mutations);
           mutations.forEach((mutation) => {
             if (mutation.addedNodes) {
               mutation.addedNodes.forEach((node) => {
