@@ -1,4 +1,8 @@
 //WebEngage -- Start
+const webengageScript = document.createElement("script");
+webengageScript.id = "_webengage_script_tag";
+webengageScript.type = "text/javascript";
+webengageScript.textContent = `
 var webengage;
 !(function (w, e, b, n, g) {
   function o(e, t) {
@@ -45,6 +49,8 @@ var webengage;
   }
 })(window, document, "webengage");
 webengage.init("in~~47b66760");
+`;
+document.head.appendChild(webengageScript);
 //WebEngage -- End
 
 const getCurrentUnixTimestamp = () => {
