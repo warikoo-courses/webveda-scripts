@@ -63,6 +63,21 @@ const init = () => {
     window.location.host === "webveda.com" ||
     window.location.host === "digital-reservation-141130.framer.app"
   ) {
+    // Home Page
+    if (window.location.pathname === "/") {
+      window.addEventListener("DOMContentLoaded", () => {
+        const utm_source = window.location.search.split("utm_source=")[1];
+        const utm_medium = window.location.search.split("utm_medium=")[1];
+        const utm_campaign = window.location.search.split("utm_campaign=")[1];
+        webengage.track("Home Page Viewed", {
+          Source: utm_source,
+          Medium: utm_medium,
+          Campaign: utm_campaign,
+        });
+      });
+    }
+
+    // Cart Page
     if (window.location.pathname === "/cart") {
       const form = document.getElementById("userDetailsForm");
       const formDetails = {};
