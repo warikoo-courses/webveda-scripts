@@ -70,6 +70,22 @@ window.course_data = [
     No_Of_Modules: 10,
     Plan_Cost: [1299, 1699, 1999],
   },
+  {
+    Title: "Instagram Mastery For Creators",
+    Category: "Growth",
+    Link: "https://digital-reservation-141130.framer.app/courses/how-to-instagram-by-webveda",
+    Course_id: "WV002",
+    Source: null,
+    Campaign: null,
+    Medium: null,
+    is_Login: true, //TODO: Ask about this
+    Language: ["English"],
+    Duration: 12,
+    Rating: 4.92,
+    Student_Enrolled_Count: 12145,
+    No_Of_Modules: 8,
+    Plan_Cost: [1449, 1549, 1749],
+  },
 ];
 
 function fetchParams(type) {
