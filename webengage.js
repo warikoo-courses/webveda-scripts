@@ -403,25 +403,25 @@ const init = () => {
       const form = document.getElementById("userDetailsForm");
       const formDetails = {};
 
-      const price1 =
-        document.getElementById("testing123").firstElementChild.textContent;
-      const course1 = document
-        .getElementById("cartItem")
-        .firstElementChild.getAttribute("data-framer-name");
-
-      webengage.track("Purchase Initiated", {
-        Title: course1.split("_")[0],
-        Purchase_Link: currentUrl2.toString(),
-        Plan_Name: course1.split("_")[1],
-        Plan_Cost: price1,
-        Source: fetchParams("source"),
-        Medium: fetchParams("medium"),
-        Campaign: fetchParams("campaign"),
-        Amount: price1,
-      });
-      console.log("Event Init Fired");
-
       form.addEventListener("submit", (e) => {
+        const price1 =
+          document.getElementById("testing123").firstElementChild.textContent;
+        const course1 = document
+          .getElementById("cartItem")
+          .firstElementChild.getAttribute("data-framer-name");
+
+        webengage.track("Purchase Initiated", {
+          Title: course1.split("_")[0],
+          Purchase_Link: currentUrl2.toString(),
+          Plan_Name: course1.split("_")[1],
+          Plan_Cost: price1,
+          Source: fetchParams("source"),
+          Medium: fetchParams("medium"),
+          Campaign: fetchParams("campaign"),
+          Amount: price1,
+        });
+        console.log("Event Init Fired");
+
         formDetails.name = document.getElementById("name").value.trim();
         formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
         formDetails.email = document.getElementById("email").value.trim();
