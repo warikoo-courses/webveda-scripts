@@ -409,7 +409,8 @@ const init = () => {
         const course1 = document
           .getElementById("cartItem")
           .firstElementChild.getAttribute("data-framer-name");
-
+        const currentUrl2 = new URL(window.location.href);
+        currentUrl2.searchParams.set("course", course1);
         webengage.track("Purchase Initiated", {
           Title: course1.split("_")[0],
           Purchase_Link: currentUrl2.toString(),
