@@ -450,7 +450,7 @@ const init = () => {
 
         async function getIPAddress() {
           const ip_data = await fetch(
-            "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzp"
+            "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
           );
           const ip_data_json = await ip_data.json();
           return ip_data_json;
