@@ -419,7 +419,7 @@ const init = () => {
       const form = document.getElementById("userDetailsForm");
       const formDetails = {};
 
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         const price1 =
           document.getElementById("testing123").firstElementChild.textContent;
         const course1 = document
@@ -447,6 +447,58 @@ const init = () => {
         webengage.user.setAttribute("we_first_name", formDetails.name);
         webengage.user.setAttribute("we_phone", formDetails.whatsapp);
         webengage.user.setAttribute("we_email", formDetails.email);
+
+        async function getIPAddress() {
+          const ip_data = await fetch(
+            "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzp"
+          );
+          const ip_data_json = await ip_data.json();
+          return ip_data_json;
+        }
+
+        const ip_data = await getIPAddress();
+        //Location Data
+        webengage.user.setAttribute("City", ip_data.city);
+        webengage.user.setAttribute("Country", ip_data.country_name);
+        webengage.user.setAttribute("State", ip_data.region);
+        //Device Data
+        const userAgent = window.navigator.userAgent;
+        const platform =
+          window.navigator.userAgentData?.platform || window.navigator.platform;
+        // Determine device type based on user agent
+        const isMobile = /Mobile|Android|iPhone|iPad|iPod/i.test(userAgent);
+        const deviceType = isMobile ? "Mobile" : "Desktop";
+        webengage.user.setAttribute("Device_Type", deviceType);
+        webengage.user.setAttribute("Device_Name", userAgent);
+        webengage.user.setAttribute("Device_OS", platform);
+        //Purchase Info
+        function getlocalStorageCart() {
+          const cart = localStorage.getItem("cartItems");
+          if (!cart) return [];
+          const parsedCart = JSON.parse(cart);
+          const uniqueCart = [...new Set(parsedCart)];
+          console.log(uniqueCart);
+          return uniqueCart;
+        }
+        const cartItems = getlocalStorageCart();
+        webengage.user.setAttribute(
+          "Number of Course Purchased",
+          cartItems.length
+        );
+        webengage.user.setAttribute("Courses Purchased", cartItems);
+        webengage.user.setAttribute(
+          "Date of purchase",
+          new Date().toISOString()
+        );
+
+        if (ip_data.country_name === "India") {
+          webengage.user.setAttribute("Total Amount", price1);
+        } else {
+          webengage.user.setAttribute(
+            "Total Amount",
+            parseInt(price1.replace(/[₹,]/g, "")) * 85
+          );
+        }
       });
     }
   }
