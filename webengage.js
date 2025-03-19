@@ -129,36 +129,6 @@ const init = () => {
   ) {
     // Home Page
     if (window.location.pathname === "/") {
-      // Home Page Viewed
-      window.addEventListener("DOMContentLoaded", () => {
-        console.log("Home Page Viewed");
-        const utm_source = window.location.search.split("utm_source=")[1];
-        const utm_medium = window.location.search.split("utm_medium=")[1];
-        const utm_campaign = window.location.search.split("utm_campaign=")[1];
-        webengage.track("Home Page Viewed", {
-          Source: utm_source,
-          Medium: utm_medium,
-          Campaign: utm_campaign,
-          is_Login: false,
-        });
-      });
-
-      // Login Button Clicked
-      const loginButton = document.getElementById("login-button");
-      loginButton.addEventListener("click", () => {
-        webengage.track("Login Click");
-      });
-
-      //Navbar items
-      const navbarItems = document.getElementsByClassName("navbar-item");
-      for (let i = 0; i < navbarItems.length; i++) {
-        navbarItems[i].addEventListener("click", () => {
-          webengage.track("Navbar Item Clicked", {
-            Selection: navbarItems[i].textContent,
-          });
-        });
-      }
-
       // Homepage Video Viewed
       const observeVideo = () => {
         const overlay = document.getElementById("overlay");
@@ -233,14 +203,6 @@ const init = () => {
         });
       };
       observeVideo();
-
-      // WA Support Clicked
-      const waSupportButtons = document.getElementsByClassName("WAsupport");
-      for (let i = 0; i < waSupportButtons.length; i++) {
-        waSupportButtons[i].addEventListener("click", () => {
-          webengage.track("WA Support Clicked");
-        });
-      }
     }
 
     //CoursePages
