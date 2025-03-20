@@ -442,6 +442,7 @@
             utmContent: url.searchParams.get("utm_content"),
             utmTerm: url.searchParams.get("utm_term"),
             eventId: timestamp || "",
+            ip_data: ip_data || "",
           });
           const response = await fetch(
             `https://webveda-checkout.onrender.com/api/v1/stripepayment/`,
