@@ -167,14 +167,14 @@
   }
 
   // Create and insert style element
-  const style = document.createElement("style");
-  style.textContent = styleSheet;
-  document.head.appendChild(style);
+  // const style = document.createElement("style");
+  // style.textContent = styleSheet;
+  // document.head.appendChild(style);
 
   // Insert modal HTML
-  const div = document.createElement("div");
-  div.innerHTML = modalHTML;
-  document.body.appendChild(div.firstElementChild);
+  // const div = document.createElement("div");
+  // div.innerHTML = modalHTML;
+  // document.body.appendChild(div.firstElementChild);
 
   // Initialize payment form functionality
   async function initializePaymentForm() {
