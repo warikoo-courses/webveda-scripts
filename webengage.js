@@ -405,24 +405,11 @@ const init = () => {
         formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
         formDetails.email = document.getElementById("email").value.trim();
 
-        webengage.user.login();
+        webengage.user.login(email);
         webengage.user.setAttribute("we_first_name", formDetails.name);
         webengage.user.setAttribute("we_phone", formDetails.whatsapp);
         webengage.user.setAttribute("we_email", formDetails.email);
 
-        async function getIPAddress() {
-          const ip_data = await fetch(
-            "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
-          );
-          const ip_data_json = await ip_data.json();
-          return ip_data_json;
-        }
-
-        const ip_data = await getIPAddress();
-        //Location Data
-        webengage.user.setAttribute("City", ip_data.city);
-        webengage.user.setAttribute("Country", ip_data.country_name);
-        webengage.user.setAttribute("State", ip_data.region);
         //Device Data
         const userAgent = window.navigator.userAgent;
         const platform =
