@@ -416,6 +416,10 @@ const init = () => {
 
         webengage.user.login(formDetails.email);
         webengage.user.setAttribute("we_first_name", formDetails.name);
+        formDetails.whatsapp =
+          formDetails.whatsapp.length > 10
+            ? formDetails.whatsapp
+            : "+91" + formDetails.whatsapp;
         webengage.user.setAttribute("we_phone", formDetails.whatsapp);
         webengage.user.setAttribute("we_email", formDetails.email);
 
@@ -429,37 +433,13 @@ const init = () => {
         webengage.user.setAttribute("Device_Type", deviceType);
         webengage.user.setAttribute("Device_Name", userAgent);
         webengage.user.setAttribute("Device_OS", platform);
-        //Purchase Info
-        function getlocalStorageCart() {
-          const cart = localStorage.getItem("cartItems");
-          if (!cart) return [];
-          const parsedCart = JSON.parse(cart);
-          const uniqueCart = [...new Set(parsedCart)];
-          console.log(uniqueCart);
-          return uniqueCart;
-        }
-        const cartItems = getlocalStorageCart();
-        webengage.user.setAttribute(
-          "Number of Course Purchased",
-          cartItems.length
-        );
-        webengage.user.setAttribute("Courses Purchased", cartItems);
-        webengage.user.setAttribute(
-          "Date of purchase",
-          new Date().toISOString()
-        );
-
-        if (ip_data.country_name === "India") {
-          webengage.user.setAttribute("Total Amount", price1);
-        } else {
-          webengage.user.setAttribute(
-            "Total Amount",
-            parseInt(price1.replace(/[₹,]/g, "")) * 85
-          );
-        }
       });
     }
   }
 };
 
-window.addEventListener("DOMContentLoaded", init);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
