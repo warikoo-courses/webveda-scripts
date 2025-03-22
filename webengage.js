@@ -204,7 +204,11 @@ const init = () => {
           subtree: true,
         });
       };
-      observeVideo();
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", observeVideo);
+      } else {
+        observeVideo();
+      }
     }
 
     //CoursePages
@@ -292,7 +296,12 @@ const init = () => {
           subtree: true,
         });
       };
-      observeVideo();
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", observeVideo);
+      } else {
+        observeVideo();
+      }
 
       //Course Results Video Viewed
       const observeResultsVideo = () => {
@@ -376,7 +385,11 @@ const init = () => {
           subtree: true,
         });
       };
-      observeResultsVideo();
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", observeResultsVideo);
+      } else {
+        observeResultsVideo();
+      }
     }
 
     // Cart Page
