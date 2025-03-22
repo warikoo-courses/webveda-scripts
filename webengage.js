@@ -404,8 +404,8 @@ const init = () => {
         formDetails.name = document.getElementById("name").value.trim();
         formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
         formDetails.email = document.getElementById("email").value.trim();
-        console.log(formDetails);
-        webengage.user.login(email);
+
+        webengage.user.login(formDetails.email);
         webengage.user.setAttribute("we_first_name", formDetails.name);
         webengage.user.setAttribute("we_phone", formDetails.whatsapp);
         webengage.user.setAttribute("we_email", formDetails.email);
