@@ -122,6 +122,8 @@ const getCurrentUnixTimestamp = () => {
 };
 
 const init = () => {
+  console.log("Running init with URL:", window.location.pathname); // Debug logging
+
   if (
     window.location.host === "www.webveda.com" ||
     window.location.host === "webveda.com" ||
@@ -207,6 +209,7 @@ const init = () => {
 
     //CoursePages
     if (window.location.pathname.includes("/course")) {
+      console.log("Course page detected, initializing observers"); // Debug logging
       //Course Hero Video Viewed
       const observeVideo = () => {
         const overlay = document.getElementById("overlay");
@@ -438,8 +441,61 @@ const init = () => {
   }
 };
 
+// Initial run
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {
   init();
 }
+
+// Monitor URL changes
+let lastUrl = window.location.href;
+
+// Method 1: Using popstate event (browser back/forward buttons)
+window.addEventListener("popstate", () => {
+  console.log("popstate detected");
+  const currentUrl = window.location.href;
+  if (currentUrl !== lastUrl) {
+    console.log(`URL changed from ${lastUrl} to ${currentUrl}`);
+    lastUrl = currentUrl;
+    init();
+  }
+});
+
+// Method 2: Override history methods to detect programmatic URL changes
+const originalPushState = history.pushState;
+const originalReplaceState = history.replaceState;
+
+history.pushState = function () {
+  originalPushState.apply(this, arguments);
+  const currentUrl = window.location.href;
+  if (currentUrl !== lastUrl) {
+    console.log(`URL changed via pushState from ${lastUrl} to ${currentUrl}`);
+    lastUrl = currentUrl;
+    init();
+  }
+};
+
+history.replaceState = function () {
+  originalReplaceState.apply(this, arguments);
+  const currentUrl = window.location.href;
+  if (currentUrl !== lastUrl) {
+    console.log(
+      `URL changed via replaceState from ${lastUrl} to ${currentUrl}`
+    );
+    lastUrl = currentUrl;
+    init();
+  }
+};
+
+// Method 3: Periodic check for URL changes (fallback)
+setInterval(() => {
+  const currentUrl = window.location.href;
+  if (currentUrl !== lastUrl) {
+    console.log(
+      `URL changed via interval check from ${lastUrl} to ${currentUrl}`
+    );
+    lastUrl = currentUrl;
+    init();
+  }
+}, 500); // Check every 500ms
