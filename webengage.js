@@ -453,10 +453,8 @@ let lastUrl = window.location.href;
 
 // Method 1: Using popstate event (browser back/forward buttons)
 window.addEventListener("popstate", () => {
-  console.log("popstate detected");
   const currentUrl = window.location.href;
   if (currentUrl !== lastUrl) {
-    console.log(`URL changed from ${lastUrl} to ${currentUrl}`);
     lastUrl = currentUrl;
     init();
   }
@@ -470,7 +468,6 @@ history.pushState = function () {
   originalPushState.apply(this, arguments);
   const currentUrl = window.location.href;
   if (currentUrl !== lastUrl) {
-    console.log(`URL changed via pushState from ${lastUrl} to ${currentUrl}`);
     lastUrl = currentUrl;
     init();
   }
@@ -480,9 +477,6 @@ history.replaceState = function () {
   originalReplaceState.apply(this, arguments);
   const currentUrl = window.location.href;
   if (currentUrl !== lastUrl) {
-    console.log(
-      `URL changed via replaceState from ${lastUrl} to ${currentUrl}`
-    );
     lastUrl = currentUrl;
     init();
   }
@@ -492,9 +486,6 @@ history.replaceState = function () {
 setInterval(() => {
   const currentUrl = window.location.href;
   if (currentUrl !== lastUrl) {
-    console.log(
-      `URL changed via interval check from ${lastUrl} to ${currentUrl}`
-    );
     lastUrl = currentUrl;
     init();
   }
