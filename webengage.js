@@ -133,77 +133,94 @@ const init = () => {
     if (window.location.pathname === "/") {
       // Homepage Video Viewed
       const observeVideo = () => {
-        const overlay = document.getElementById("overlay");
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.addedNodes) {
-              console.log("mutation.addedNodes", mutation.addedNodes);
-              mutation.addedNodes.forEach((node) => {
-                // Check if node itself or any of its children has heroVideo id
-                const heroVideo =
-                  node.id === "heroVideo"
-                    ? node
-                    : node.querySelector("#heroVideo");
-                if (heroVideo) {
-                  const video = heroVideo.querySelector("video");
-                  console.log("video", video);
-                  if (video) {
-                    let startTime = 0;
-                    let watchDuration = 0;
-                    let totalDuration = 0;
+        const checkAndObserve = () => {
+          const overlay = document.getElementById("overlay");
+          if (!overlay) {
+            console.log("Overlay element not found, retrying in 500ms...");
+            setTimeout(checkAndObserve, 500);
+            return;
+          }
 
-                    // Get video duration once metadata is loaded
-                    video.addEventListener("loadedmetadata", () => {
-                      totalDuration = video.duration;
-                    });
+          console.log(
+            "Overlay element found for homepage, starting observation"
+          );
+          const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.addedNodes) {
+                console.log("mutation.addedNodes", mutation.addedNodes);
+                mutation.addedNodes.forEach((node) => {
+                  // Check if node itself or any of its children has heroVideo id
+                  const heroVideo =
+                    node.id === "heroVideo"
+                      ? node
+                      : node.querySelector("#heroVideo");
+                  if (heroVideo) {
+                    const video = heroVideo.querySelector("video");
+                    console.log("video", video);
+                    if (video) {
+                      let startTime = 0;
+                      let watchDuration = 0;
+                      let totalDuration = 0;
 
-                    video.addEventListener("play", () => {
-                      startTime = video.currentTime;
-                    });
-
-                    const trackVideoView = () => {
-                      watchDuration = video.currentTime - startTime;
-                      webengage.track("Homepage Video Viewed", {
-                        Duration_viewed: watchDuration,
+                      // Get video duration once metadata is loaded
+                      video.addEventListener("loadedmetadata", () => {
+                        totalDuration = video.duration;
                       });
-                      console.log("Event Fired");
-                    };
 
-                    video.addEventListener("pause", trackVideoView);
-                    video.addEventListener("ended", trackVideoView);
+                      video.addEventListener("play", () => {
+                        startTime = video.currentTime;
+                      });
 
-                    // Track when video is unmounted
-                    const videoObserver = new MutationObserver((mutations) => {
-                      mutations.forEach((mutation) => {
-                        if (mutation.removedNodes) {
-                          mutation.removedNodes.forEach((node) => {
-                            if (node === video || node.contains(video)) {
-                              trackVideoView();
-                              videoObserver.disconnect();
+                      const trackVideoView = () => {
+                        watchDuration = video.currentTime - startTime;
+                        webengage.track("Homepage Video Viewed", {
+                          Duration_viewed: watchDuration,
+                        });
+                        console.log("Event Fired");
+                      };
+
+                      video.addEventListener("pause", trackVideoView);
+                      video.addEventListener("ended", trackVideoView);
+
+                      // Track when video is unmounted
+                      const videoObserver = new MutationObserver(
+                        (mutations) => {
+                          mutations.forEach((mutation) => {
+                            if (mutation.removedNodes) {
+                              mutation.removedNodes.forEach((node) => {
+                                if (node === video || node.contains(video)) {
+                                  trackVideoView();
+                                  videoObserver.disconnect();
+                                }
+                              });
                             }
                           });
                         }
+                      );
+
+                      videoObserver.observe(heroVideo.parentNode, {
+                        childList: true,
+                        subtree: true,
                       });
-                    });
 
-                    videoObserver.observe(heroVideo.parentNode, {
-                      childList: true,
-                      subtree: true,
-                    });
-
-                    observer.disconnect();
+                      observer.disconnect();
+                    }
                   }
-                }
-              });
-            }
+                });
+              }
+            });
           });
-        });
 
-        observer.observe(overlay, {
-          childList: true,
-          subtree: true,
-        });
+          observer.observe(overlay, {
+            childList: true,
+            subtree: true,
+          });
+        };
+
+        // Start checking for overlay
+        checkAndObserve();
       };
+
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", observeVideo);
       } else {
@@ -216,85 +233,103 @@ const init = () => {
       console.log("Course page detected, initializing observers"); // Debug logging
       //Course Hero Video Viewed
       const observeVideo = () => {
-        const overlay = document.getElementById("overlay");
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.addedNodes) {
-              console.log("mutation.addedNodes", mutation.addedNodes);
-              mutation.addedNodes.forEach((node) => {
-                // Check if node itself or any of its children has heroVideo id
-                const heroVideo =
-                  node.id === "heroVideo"
-                    ? node
-                    : node.querySelector("#heroVideo");
-                if (heroVideo) {
-                  const video = heroVideo.querySelector("video");
-                  console.log("video", video);
-                  if (video) {
-                    let startTime = 0;
-                    let watchDuration = 0;
-                    let totalDuration = 0;
+        const checkAndObserve = () => {
+          const overlay = document.getElementById("overlay");
+          if (!overlay) {
+            console.log(
+              "Overlay element not found for course page, retrying in 500ms..."
+            );
+            setTimeout(checkAndObserve, 500);
+            return;
+          }
 
-                    // Get video duration once metadata is loaded
-                    video.addEventListener("loadedmetadata", () => {
-                      totalDuration = video.duration;
-                    });
+          console.log(
+            "Overlay element found for course page, starting observation"
+          );
+          const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.addedNodes) {
+                console.log("mutation.addedNodes", mutation.addedNodes);
+                mutation.addedNodes.forEach((node) => {
+                  // Check if node itself or any of its children has heroVideo id
+                  const heroVideo =
+                    node.id === "heroVideo"
+                      ? node
+                      : node.querySelector("#heroVideo");
+                  if (heroVideo) {
+                    const video = heroVideo.querySelector("video");
+                    console.log("video", video);
+                    if (video) {
+                      let startTime = 0;
+                      let watchDuration = 0;
+                      let totalDuration = 0;
 
-                    video.addEventListener("play", () => {
-                      startTime = video.currentTime;
-                    });
-
-                    const trackVideoView = () => {
-                      watchDuration = video.currentTime - startTime;
-                      const course = getCourseFromURL(window.course_data);
-                      webengage.track("Course Trailer Played", {
-                        Duration: watchDuration,
-                        Course_id: course.Course_id,
-                        Category: course.Category,
-                        Link: course.Link,
-                        Title: course.Title,
-                        Language: course.Language,
-                        Rating: course.Rating,
-                        Student_Enrolled_Count: course.Student_Enrolled_Count,
-                        No_Of_Modules: course.No_Of_Modules,
+                      // Get video duration once metadata is loaded
+                      video.addEventListener("loadedmetadata", () => {
+                        totalDuration = video.duration;
                       });
-                      console.log("Event Fired");
-                    };
 
-                    video.addEventListener("pause", trackVideoView);
-                    video.addEventListener("ended", trackVideoView);
+                      video.addEventListener("play", () => {
+                        startTime = video.currentTime;
+                      });
 
-                    // Track when video is unmounted
-                    const videoObserver = new MutationObserver((mutations) => {
-                      mutations.forEach((mutation) => {
-                        if (mutation.removedNodes) {
-                          mutation.removedNodes.forEach((node) => {
-                            if (node === video || node.contains(video)) {
-                              trackVideoView();
-                              videoObserver.disconnect();
+                      const trackVideoView = () => {
+                        watchDuration = video.currentTime - startTime;
+                        const course = getCourseFromURL(window.course_data);
+                        webengage.track("Course Trailer Played", {
+                          Duration: watchDuration,
+                          Course_id: course.Course_id,
+                          Category: course.Category,
+                          Link: course.Link,
+                          Title: course.Title,
+                          Language: course.Language,
+                          Rating: course.Rating,
+                          Student_Enrolled_Count: course.Student_Enrolled_Count,
+                          No_Of_Modules: course.No_Of_Modules,
+                        });
+                        console.log("Event Fired");
+                      };
+
+                      video.addEventListener("pause", trackVideoView);
+                      video.addEventListener("ended", trackVideoView);
+
+                      // Track when video is unmounted
+                      const videoObserver = new MutationObserver(
+                        (mutations) => {
+                          mutations.forEach((mutation) => {
+                            if (mutation.removedNodes) {
+                              mutation.removedNodes.forEach((node) => {
+                                if (node === video || node.contains(video)) {
+                                  trackVideoView();
+                                  videoObserver.disconnect();
+                                }
+                              });
                             }
                           });
                         }
+                      );
+
+                      videoObserver.observe(heroVideo.parentNode, {
+                        childList: true,
+                        subtree: true,
                       });
-                    });
 
-                    videoObserver.observe(heroVideo.parentNode, {
-                      childList: true,
-                      subtree: true,
-                    });
-
-                    observer.disconnect();
+                      observer.disconnect();
+                    }
                   }
-                }
-              });
-            }
+                });
+              }
+            });
           });
-        });
 
-        observer.observe(overlay, {
-          childList: true,
-          subtree: true,
-        });
+          observer.observe(overlay, {
+            childList: true,
+            subtree: true,
+          });
+        };
+
+        // Start checking for overlay
+        checkAndObserve();
       };
 
       if (document.readyState === "loading") {
@@ -305,86 +340,105 @@ const init = () => {
 
       //Course Results Video Viewed
       const observeResultsVideo = () => {
-        const overlay = document.getElementById("overlay");
-        const results_observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.addedNodes) {
-              console.log("mutation.addedNodes", mutation.addedNodes);
-              mutation.addedNodes.forEach((node) => {
-                // Check if node itself or any of its children has heroVideo id
-                const heroVideo =
-                  node.id === "resultVideo"
-                    ? node
-                    : node.querySelector("#resultVideo");
-                if (heroVideo) {
-                  const video = heroVideo.querySelector("video");
-                  console.log("video", video);
-                  if (video) {
-                    let startTime = 0;
-                    let watchDuration = 0;
-                    let totalDuration = 0;
+        const checkAndObserve = () => {
+          const overlay = document.getElementById("overlay");
+          if (!overlay) {
+            console.log(
+              "Overlay element not found for results video, retrying in 500ms..."
+            );
+            setTimeout(checkAndObserve, 500);
+            return;
+          }
 
-                    // Get video duration once metadata is loaded
-                    video.addEventListener("loadedmetadata", () => {
-                      totalDuration = video.duration;
-                    });
+          console.log(
+            "Overlay element found for results video, starting observation"
+          );
+          const results_observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.addedNodes) {
+                console.log("mutation.addedNodes", mutation.addedNodes);
+                mutation.addedNodes.forEach((node) => {
+                  // Check if node itself or any of its children has heroVideo id
+                  const heroVideo =
+                    node.id === "resultVideo"
+                      ? node
+                      : node.querySelector("#resultVideo");
+                  if (heroVideo) {
+                    const video = heroVideo.querySelector("video");
+                    console.log("video", video);
+                    if (video) {
+                      let startTime = 0;
+                      let watchDuration = 0;
+                      let totalDuration = 0;
 
-                    video.addEventListener("play", () => {
-                      startTime = video.currentTime;
-                    });
-
-                    const trackVideoView = () => {
-                      watchDuration = video.currentTime - startTime;
-                      const course = getCourseFromURL(window.course_data);
-                      webengage.track("Course Results Video Viewed", {
-                        Duration: watchDuration,
-                        Course_id: course.Course_id,
-                        Category: course.Category,
-                        Link: course.Link,
-                        Title: course.Title,
-                        Language: course.Language,
-                        Rating: course.Rating,
-                        Student_Enrolled_Count: course.Student_Enrolled_Count,
-                        No_Of_Modules: course.No_Of_Modules,
+                      // Get video duration once metadata is loaded
+                      video.addEventListener("loadedmetadata", () => {
+                        totalDuration = video.duration;
                       });
-                      console.log("Event Fired");
-                    };
 
-                    video.addEventListener("pause", trackVideoView);
-                    video.addEventListener("ended", trackVideoView);
+                      video.addEventListener("play", () => {
+                        startTime = video.currentTime;
+                      });
 
-                    // Track when video is unmounted
-                    const videoObserver = new MutationObserver((mutations) => {
-                      mutations.forEach((mutation) => {
-                        if (mutation.removedNodes) {
-                          mutation.removedNodes.forEach((node) => {
-                            if (node === video || node.contains(video)) {
-                              trackVideoView();
-                              videoObserver.disconnect();
+                      const trackVideoView = () => {
+                        watchDuration = video.currentTime - startTime;
+                        const course = getCourseFromURL(window.course_data);
+                        webengage.track("Course Results Video Viewed", {
+                          Duration: watchDuration,
+                          Course_id: course.Course_id,
+                          Category: course.Category,
+                          Link: course.Link,
+                          Title: course.Title,
+                          Language: course.Language,
+                          Rating: course.Rating,
+                          Student_Enrolled_Count: course.Student_Enrolled_Count,
+                          No_Of_Modules: course.No_Of_Modules,
+                        });
+                        console.log("Event Fired");
+                      };
+
+                      video.addEventListener("pause", trackVideoView);
+                      video.addEventListener("ended", trackVideoView);
+
+                      // Track when video is unmounted
+                      const videoObserver = new MutationObserver(
+                        (mutations) => {
+                          mutations.forEach((mutation) => {
+                            if (mutation.removedNodes) {
+                              mutation.removedNodes.forEach((node) => {
+                                if (node === video || node.contains(video)) {
+                                  trackVideoView();
+                                  videoObserver.disconnect();
+                                }
+                              });
                             }
                           });
                         }
+                      );
+
+                      videoObserver.observe(heroVideo.parentNode, {
+                        childList: true,
+                        subtree: true,
                       });
-                    });
 
-                    videoObserver.observe(heroVideo.parentNode, {
-                      childList: true,
-                      subtree: true,
-                    });
-
-                    results_observer.disconnect();
+                      results_observer.disconnect();
+                    }
                   }
-                }
-              });
-            }
+                });
+              }
+            });
           });
-        });
 
-        results_observer.observe(overlay, {
-          childList: true,
-          subtree: true,
-        });
+          results_observer.observe(overlay, {
+            childList: true,
+            subtree: true,
+          });
+        };
+
+        // Start checking for overlay
+        checkAndObserve();
       };
+
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", observeResultsVideo);
       } else {
@@ -460,3 +514,43 @@ if (document.readyState === "loading") {
 } else {
   init();
 }
+
+// Monitor URL changes
+let lastUrl = window.location.href;
+
+// Method 1: Using popstate event (browser back/forward buttons)
+window.addEventListener("popstate", () => {
+  console.log("popstate detected");
+  const currentUrl = window.location.href;
+  if (currentUrl !== lastUrl) {
+    console.log(`URL changed from ${lastUrl} to ${currentUrl}`);
+    lastUrl = currentUrl;
+    init();
+  }
+});
+
+// Method 2: Override history methods to detect programmatic URL changes
+const originalPushState = history.pushState;
+const originalReplaceState = history.replaceState;
+
+history.pushState = function () {
+  originalPushState.apply(this, arguments);
+  const currentUrl = window.location.href;
+  if (currentUrl !== lastUrl) {
+    console.log(`URL changed via pushState from ${lastUrl} to ${currentUrl}`);
+    lastUrl = currentUrl;
+    init();
+  }
+};
+
+history.replaceState = function () {
+  originalReplaceState.apply(this, arguments);
+  const currentUrl = window.location.href;
+  if (currentUrl !== lastUrl) {
+    console.log(
+      `URL changed via replaceState from ${lastUrl} to ${currentUrl}`
+    );
+    lastUrl = currentUrl;
+    init();
+  }
+};
