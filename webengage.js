@@ -57,7 +57,7 @@ window.course_data = [
   {
     Title: "The Complete Guide To Starting Up",
     Category: "Money",
-    Link: "https://digital-reservation-141130.framer.app/courses/the-complete-guide-to-starting-up-by-webveda",
+    Link: "https://webveda.com/courses/the-complete-guide-to-starting-up-by-webveda",
     Course_id: "wvcourse-001",
     Source: null,
     Campaign: null,
@@ -72,7 +72,7 @@ window.course_data = [
   {
     Title: "Take Charge of Your Time",
     Category: "Productivity",
-    Link: "https://digital-reservation-141130.framer.app/courses/take-charge-of-your-time-by-webveda",
+    Link: "https://webveda.com/courses/take-charge-of-your-time-by-webveda",
     Course_id: "wvcourse-002",
     Source: null,
     Campaign: null,
@@ -87,7 +87,7 @@ window.course_data = [
   {
     Title: "The Ultimate Guide to Effective Communication",
     Category: "Productivity",
-    Link: "https://digital-reservation-141130.framer.app/courses/the-ultimate-guide-to-effective-communication-by-webveda",
+    Link: "https://webveda.com/courses/the-ultimate-guide-to-effective-communication-by-webveda",
     Course_id: "wvcourse-003",
     Source: null,
     Campaign: null,
@@ -102,7 +102,7 @@ window.course_data = [
   {
     Title: "How To YouTube",
     Category: "Growth",
-    Link: "https://digital-reservation-141130.framer.app/courses/how-to-youtube-by-webveda",
+    Link: "https://webveda.com/courses/how-to-youtube-by-webveda",
     Course_id: "wvcourse-004",
     Source: null,
     Campaign: null,
@@ -118,7 +118,7 @@ window.course_data = [
   {
     Title: "Instagram Mastery For Creators",
     Category: "Growth",
-    Link: "https://digital-reservation-141130.framer.app/courses/how-to-instagram-by-webveda",
+    Link: "https://webveda.com/courses/how-to-instagram-by-webveda",
     Course_id: "wvcourse-005",
     Source: null,
     Campaign: null,
@@ -133,7 +133,7 @@ window.course_data = [
   {
     Title: "Learn to LinkedIn",
     Category: "Growth",
-    Link: "https://digital-reservation-141130.framer.app/courses/how-to-linkedin-by-webveda",
+    Link: "https://webveda.com/courses/how-to-linkedin-by-webveda",
     Course_id: "wvcourse-006",
     Source: null,
     Campaign: null,
@@ -148,7 +148,7 @@ window.course_data = [
   {
     Title: "Make Writing Your Career",
     Category: "Growth",
-    Link: "https://digital-reservation-141130.framer.app/courses/make-writing-a-career-by-webveda",
+    Link: "https://webveda.com/courses/make-writing-a-career-by-webveda",
     Course_id: "wvcourse-007",
     Source: null,
     Campaign: null,
@@ -163,7 +163,7 @@ window.course_data = [
   {
     Title: "Take Charge of Your Money",
     Category: "Money",
-    Link: "https://digital-reservation-141130.framer.app/courses/take-charge-of-your-money-by-webveda",
+    Link: "https://webveda.com/courses/take-charge-of-your-money-by-webveda",
     Course_id: "wvcourse-008",
     Source: null,
     Campaign: null,
@@ -178,7 +178,7 @@ window.course_data = [
   {
     Title: "Build Your Online Teaching Business",
     Category: "Growth",
-    Link: "https://digital-reservation-141130.framer.app/courses/launching-a-courses-business-by-webveda",
+    Link: "https://webveda.com/courses/launching-a-courses-business-by-webveda",
     Course_id: "wvcourse-009",
     Source: null,
     Campaign: null,
@@ -193,7 +193,7 @@ window.course_data = [
   {
     Title: "Time Management For Students",
     Category: "Productivity",
-    Link: "https://digital-reservation-141130.framer.app/courses/time-management-for-students-by-webveda",
+    Link: "https://webveda.com/courses/time-management-for-students-by-webveda",
     Course_id: "wvcourse-010",
     Source: null,
     Campaign: null,
@@ -208,7 +208,7 @@ window.course_data = [
   {
     Title: "The Art Of Cold Emailing",
     Category: "Growth",
-    Link: "https://digital-reservation-141130.framer.app/courses/the-art-of-cold-emailing-by-webveda",
+    Link: "https://webveda.com/courses/the-art-of-cold-emailing-by-webveda",
     Course_id: "wvcourse-011",
     Source: null,
     Campaign: null,
@@ -223,7 +223,7 @@ window.course_data = [
   {
     Title: "The Ultimate Career Toolkit",
     Category: "Growth",
-    Link: "https://digital-reservation-141130.framer.app/courses/the-ultimate-career-toolkit-by-webveda",
+    Link: "https://webveda.com/courses/the-ultimate-career-toolkit-by-webveda",
     Course_id: "wvcourse-012",
     Source: null,
     Campaign: null,
