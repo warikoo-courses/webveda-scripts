@@ -316,7 +316,7 @@ const init = () => {
         }
         const ip_data = await getIPAddress();
 
-        webengage.user.login(formDetails.email);
+        webengage.user.login(formDetails.email.toLowerCase());
         webengage.user.setAttribute("we_first_name", formDetails.name);
         formDetails.whatsapp =
           formDetails.whatsapp.length > 10
