@@ -67,7 +67,7 @@ window.course_data = [
     Rating: 4.85,
     Student_Enrolled_Count: 49116,
     No_Of_Modules: 8,
-    Plan_Cost: [1399, 1499],
+    Plan_Cost: [1399, 0, 1499],
   },
   {
     Title: "Take Charge of Your Time",
@@ -218,7 +218,7 @@ window.course_data = [
     Rating: 0,
     Student_Enrolled_Count: 7917,
     No_Of_Modules: 3,
-    Plan_Cost: [397, 497],
+    Plan_Cost: [397, 0, 497],
   },
   {
     Title: "The Ultimate Career Toolkit",
