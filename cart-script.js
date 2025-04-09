@@ -425,6 +425,9 @@
           rzp1.on("payment.failed", (res) => alert(res.error.description));
           modal.classList.add("wv-hidden");
           rzp1.open();
+          submitBtn.disabled = false;
+          submitBtn.classList.remove("loading");
+          submitBtn.textContent = "Proceed to Purchase";
         }
       };
     } else {
@@ -477,6 +480,9 @@
             })
           ).mount("#checkout");
           document.getElementById("checkout").style.display = "block";
+          submitBtn.disabled = false;
+          submitBtn.classList.remove("loading");
+          submitBtn.textContent = "Proceed to Purchase";
         }
       };
     }
