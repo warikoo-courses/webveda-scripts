@@ -196,6 +196,13 @@
         searchParams.toString() ? "?" + searchParams.toString() : ""
       }`;
       history.pushState({ path: newUrl }, "", newUrl);
+
+      // Re-enable the submit button
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("loading");
+        submitBtn.textContent = "Proceed to Purchase";
+      }
     }
 
     // Add close button event listener
@@ -384,6 +391,13 @@
           return;
         }
         const paymentArray = await generatePayment(course_name, name, ip_data);
+        if (!paymentArray || paymentArray.length !== 2) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove("loading");
+          submitBtn.textContent = "Submit";
+          alert("Payment initialization failed. Please try again.");
+          return;
+        }
         console.log(ip_data);
         if (validateForm(name, whatsapp, email)) {
           const rzp1 = new Razorpay({
