@@ -285,7 +285,9 @@ const init = () => {
 
       form.addEventListener("submit", async (e) => {
         const price1 =
-          document.getElementById("testing123").firstElementChild.textContent;
+          document.getElementById("testing123")?.firstElementChild
+            ?.textContent || "ERROR";
+        let priceNumber = parseInt(price1.replace(/[^\d]/g, ""));
         const course1 = document
           .getElementById("cartItem")
           .firstElementChild.getAttribute("data-framer-name");
@@ -295,11 +297,11 @@ const init = () => {
           Title: course1.split("_")[0],
           Purchase_Link: currentUrl2.toString(),
           Plan_Name: course1.split("_")[1],
-          Plan_Cost: price1,
+          Plan_Cost: priceNumber,
           Source: fetchParams("source"),
           Medium: fetchParams("medium"),
           Campaign: fetchParams("campaign"),
-          Amount: price1,
+          Amount: priceNumber,
         });
         console.log("Event Init Fired");
 
