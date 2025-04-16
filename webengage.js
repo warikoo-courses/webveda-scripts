@@ -294,7 +294,7 @@ const init = () => {
         const currentUrl2 = new URL(window.location.href);
         currentUrl2.searchParams.set("course", course1);
         console.log(price1, priceNumber);
-        webengage.track("Purchase Initiated", {
+        let wePayload = {
           Title: course1.split("_")[0],
           Purchase_Link: currentUrl2.toString(),
           Plan_Name: course1.split("_")[1],
@@ -303,8 +303,9 @@ const init = () => {
           Medium: fetchParams("medium"),
           Campaign: fetchParams("campaign"),
           Amount: priceNumber,
-        });
-        console.log("Event Init Fired");
+        };
+        webengage.track("Purchase Initiated", wePayload);
+        console.log("Event Init Fired", wePayload);
 
         formDetails.name = document.getElementById("name").value.trim();
         formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
