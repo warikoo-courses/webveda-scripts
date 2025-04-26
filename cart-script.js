@@ -387,6 +387,7 @@
         const name = document.getElementById("name").value.trim();
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
+
         if (course_name.length < 1) {
           return;
         }
@@ -439,7 +440,9 @@
         e.preventDefault();
 
         const name = document.getElementById("name").value.trim();
-        const whatsapp = document.getElementById("whatsapp").value.trim();
+        const whatsapp = document
+          .getElementById("whatsapp")
+          .value.replace(/\s+/g, "");
         const email = document.getElementById("email").value.trim();
 
         if (validateForm(name, whatsapp, email)) {
