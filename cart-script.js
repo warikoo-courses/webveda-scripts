@@ -16,17 +16,17 @@
         <form id="userDetailsForm">
           <div class="wv-form-group">
             <label for="name">Name*</label>
-            <input type="text" id="name" required>
+            <input type="text" id="name" required aria-required="true">
             <span class="wv-error-message" id="nameError"></span>
           </div>
           <div class="wv-form-group">
             <label for="whatsapp">WhatsApp Number* (Default Country Code is +91)</label>
-            <input type="tel" id="whatsapp" required>
+            <input type="number" id="whatsapp" required aria-required="true" pattern="[0-9]*" inputmode="numeric">
             <span class="wv-error-message" id="whatsappError"></span>
           </div>
           <div class="wv-form-group">
             <label for="email">Email*</label>
-            <input type="email" id="email" required>
+            <input type="email" id="email" required aria-required="true">
             <span class="wv-error-message" id="emailError"></span>
           </div>
           <button type="submit" class="wv-submit-btn">Proceed to Purchase</button>
@@ -387,11 +387,16 @@
         const name = document.getElementById("name").value.trim();
         const whatsapp = document.getElementById("whatsapp").value.trim();
         const email = document.getElementById("email").value.trim();
+        const course_name_reload = getlocalStorageCart();
 
         if (course_name.length < 1) {
           return;
         }
-        const paymentArray = await generatePayment(course_name, name, ip_data);
+        const paymentArray = await generatePayment(
+          course_name_reload,
+          name,
+          ip_data
+        );
         if (!paymentArray || paymentArray.length !== 2) {
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
@@ -444,7 +449,7 @@
           .getElementById("whatsapp")
           .value.replace(/\s+/g, "");
         const email = document.getElementById("email").value.trim();
-
+        const course_name_reload = getlocalStorageCart();
         if (validateForm(name, whatsapp, email)) {
           const url = new URL(window.location.href);
           const timestamp = document.cookie
@@ -455,7 +460,7 @@
             name: name,
             email: email,
             phone: whatsapp,
-            course_array: course_name,
+            course_array: course_name_reload,
             utmSource: url.searchParams.get("utm_source"),
             utmMedium: url.searchParams.get("utm_medium"),
             utmCampaign: url.searchParams.get("utm_campaign"),
