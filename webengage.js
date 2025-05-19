@@ -235,6 +235,21 @@ window.course_data = [
     No_Of_Modules: 3,
     Plan_Cost: [799, 899, 999],
   },
+  {
+    Title: "Time Management For Working Professionals",
+    Category: "Productivity",
+    Link: "https://webveda.com/courses/time-management-for-working-professionals-by-webveda",
+    Course_id: "wvcourse-013",
+    Source: null,
+    Campaign: null,
+    Medium: null,
+    Language: ["English", "Hindi"],
+    Duration: 4,
+    Rating: 1.0,
+    Student_Enrolled_Count: 0,
+    No_Of_Modules: 4,
+    Plan_Cost: [399, 499, 699],
+  },
 ];
 
 function fetchParams(type) {
