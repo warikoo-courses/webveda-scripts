@@ -298,6 +298,19 @@ const init = () => {
       const form = document.getElementById("userDetailsForm");
       const formDetails = {};
 
+      formDetails.name = document.getElementById("name").value.trim();
+      formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
+      formDetails.email = document.getElementById("email").value.trim();
+      webengage.user.login(formDetails.email.toLowerCase());
+      webengage.user.setAttribute("we_first_name", formDetails.name);
+      formDetails.whatsapp =
+        formDetails.whatsapp.length > 10
+          ? formDetails.whatsapp
+          : "+91" + formDetails.whatsapp;
+      webengage.user.setAttribute("we_phone", formDetails.whatsapp);
+      webengage.user.setAttribute("we_email", formDetails.email);
+      console.log("Logged in", formDetails);
+
       form.addEventListener("submit", async (e) => {
         const price1 =
           document.getElementById("testing123")?.firstElementChild
@@ -327,10 +340,6 @@ const init = () => {
         webengage.track("Purchase Initiated", wePayload);
         console.log("Event Init Fired", wePayload);
 
-        formDetails.name = document.getElementById("name").value.trim();
-        formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
-        formDetails.email = document.getElementById("email").value.trim();
-
         async function getIPAddress() {
           const ip_data = await fetch(
             "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
@@ -339,15 +348,6 @@ const init = () => {
           return ip_data_json;
         }
         const ip_data = await getIPAddress();
-
-        webengage.user.login(formDetails.email.toLowerCase());
-        webengage.user.setAttribute("we_first_name", formDetails.name);
-        formDetails.whatsapp =
-          formDetails.whatsapp.length > 10
-            ? formDetails.whatsapp
-            : "+91" + formDetails.whatsapp;
-        webengage.user.setAttribute("we_phone", formDetails.whatsapp);
-        webengage.user.setAttribute("we_email", formDetails.email);
       });
     }
   }
