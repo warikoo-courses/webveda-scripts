@@ -309,9 +309,12 @@ const init = () => {
         const currentUrl2 = new URL(window.location.href);
         currentUrl2.searchParams.set("course", course1);
         console.log(price1, priceNumber);
-        const courseData = getCourseFromURL(window.course_data);
+        const courseResponse = await fetch(
+          `https://webveda-checkout.onrender.com/api/v1/course_full_name/${course1}`
+        );
+        const courseData = await courseResponse.json();
         let wePayload = {
-          Title: courseData.Title,
+          Title: courseData.full_name,
           Purchase_Link: currentUrl2.toString(),
           Plan_Name: course1.split("_")[1],
           Plan_Cost: priceNumber,
