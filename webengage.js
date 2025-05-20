@@ -313,6 +313,7 @@ const init = () => {
           `https://webveda-checkout.onrender.com/api/v1/course_full_name/${course1}`
         );
         const courseData = await courseResponse.json();
+        console.log(courseData);
         let wePayload = {
           Title: courseData.full_name,
           Purchase_Link: currentUrl2.toString(),
