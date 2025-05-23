@@ -299,19 +299,21 @@ const init = () => {
       const formDetails = {};
 
       form.addEventListener("submit", async (e) => {
+        e.preventDefault();
         formDetails.name = document.getElementById("name").value.trim();
         formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
         formDetails.email = document.getElementById("email").value.trim();
 
-        webengage.user.login(formDetails.email.toLowerCase());
-        webengage.user.setAttribute("we_first_name", formDetails.name);
+        window.webengage.user.login(formDetails.email.toLowerCase());
+        window.webengage.user.setAttribute("we_first_name", formDetails.name);
         formDetails.whatsapp =
           formDetails.whatsapp.length > 10
             ? formDetails.whatsapp
             : "+91" + formDetails.whatsapp;
-        webengage.user.setAttribute("we_phone", formDetails.whatsapp);
-        webengage.user.setAttribute("we_email", formDetails.email);
+        window.webengage.user.setAttribute("we_phone", formDetails.whatsapp);
+        window.webengage.user.setAttribute("we_email", formDetails.email);
         console.log("Logged in", formDetails);
+
         const price1 =
           document.getElementById("testing123")?.firstElementChild
             ?.textContent || "ERROR";
@@ -337,7 +339,7 @@ const init = () => {
           Campaign: fetchParams("campaign"),
           Amount: priceNumber,
         };
-        webengage.track("Purchase Initiated", wePayload);
+        window.webengage.track("Purchase Initiated", wePayload);
         console.log("Event Init Fired", wePayload);
 
         async function getIPAddress() {
