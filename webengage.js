@@ -250,6 +250,21 @@ window.course_data = [
     No_Of_Modules: 4,
     Plan_Cost: [399, 499, 699],
   },
+  {
+    Title: "The Ultimate Freelancing Guide",
+    Category: "Growth",
+    Link: "https://digital-reservation-141130.framer.app/courses/freeeelannnce",
+    Course_id: "wvcourse-014",
+    Source: null,
+    Campaign: null,
+    Medium: null,
+    Language: ["English", "Hindi"],
+    Duration: 1,
+    Rating: 1.0,
+    Student_Enrolled_Count: 0,
+    No_Of_Modules: 3,
+    Plan_Cost: [199, 299, 399],
+  },
 ];
 
 function fetchParams(type) {
