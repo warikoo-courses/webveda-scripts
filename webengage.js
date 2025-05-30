@@ -253,7 +253,7 @@ window.course_data = [
   {
     Title: "The Ultimate Freelancing Guide",
     Category: "Growth",
-    Link: "https://digital-reservation-141130.framer.app/courses/the-ultimate-freelancing-guide-by-webveda",
+    Link: "https://webveda.com/courses/the-ultimate-freelancing-guide-by-webveda",
     Course_id: "wvcourse-014",
     Source: null,
     Campaign: null,
