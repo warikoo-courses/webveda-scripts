@@ -384,7 +384,7 @@
 
     window.addEventListener("popstate", checkURLAndShowForm);
 
-    if (true) {
+    if (country === "IN") {
       userForm.onsubmit = async (e) => {
         e.preventDefault();
         submitBtn.disabled = true;
