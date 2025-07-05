@@ -300,6 +300,74 @@ const getCurrentUnixTimestamp = () => {
   return Math.floor(Date.now() / 1000).toString();
 };
 
+const freeCourse = () => {
+  const submitButton = document.getElementById("btn4");
+  if (submitButton) {
+    submitButton.addEventListener("click", async () => {
+      const course = getCourseFromURL(window.course_data);
+      const email = document.getElementById("free-submit-btn").value;
+      if (email) {
+        window.webengage.user.setAttribute("we_email", email);
+        const response = await fetch(
+          `https://webveda-checkout.onrender.com/api/userCheck/${course.Course_id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email.toLowerCase(),
+            }),
+          }
+        );
+        const data = await response.json();
+        if (data.status === "success") {
+          window.webengage.track("Free Course Submitted", {
+            Course: course.Title,
+            Email: email,
+            Course_id: course.Course_id,
+          });
+          submitButton.style.backgroundColor = "green";
+          submitButton.style.cursor = "pointer";
+          submitButton.style.pointerEvents = "auto";
+          submitButton.style.opacity = "1";
+          submitButton.style.border = "none";
+          submitButton.style.color = "white";
+          submitButton.textContent = "Submitted";
+        } else {
+          submitButton.style.backgroundColor = "##ab0202";
+          submitButton.style.cursor = "not-allowed";
+          submitButton.style.pointerEvents = "none";
+          submitButton.style.opacity = "0.5";
+          submitButton.style.border = "none";
+          submitButton.style.color = "white";
+          submitButton.textContent = "Email already exists";
+        }
+      } else {
+        submitButton.style.backgroundColor = "##ab0202";
+        submitButton.style.cursor = "not-allowed";
+        submitButton.style.pointerEvents = "none";
+        submitButton.style.opacity = "0.5";
+        submitButton.style.border = "none";
+        submitButton.style.color = "white";
+        submitButton.textContent = "Email is required";
+        setTimeout(() => {
+          submitButton.style.backgroundColor = "#ffffff";
+          submitButton.style.cursor = "pointer";
+          submitButton.style.pointerEvents = "auto";
+          submitButton.style.opacity = "1";
+          submitButton.style.border = "none";
+          submitButton.style.color = "#4169e1";
+          submitButton.textContent = "Submit";
+        }, 2000);
+      }
+    });
+  } else {
+    console.error("Submit button not found");
+    return;
+  }
+};
+
 const init = () => {
   console.log("Running init with URL:", window.location.pathname); // Debug logging
 
