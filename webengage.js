@@ -65,7 +65,7 @@ window.course_data = [
     Language: ["English", "Hindi"],
     Duration: 12,
     Rating: 4.85,
-    Student_Enrolled_Count: 49116,
+    Student_Enrolled_Count: 49959,
     No_Of_Modules: 8,
     Plan_Cost: [1399, 0, 1499],
   },
@@ -80,7 +80,7 @@ window.course_data = [
     Language: ["English", "Hindi"],
     Duration: 5,
     Rating: 4.87,
-    Student_Enrolled_Count: 255572,
+    Student_Enrolled_Count: 256634,
     No_Of_Modules: 9,
     Plan_Cost: [299, 399, 699],
   },
@@ -95,7 +95,7 @@ window.course_data = [
     Language: ["English", "Hindi"],
     Duration: 4,
     Rating: 4.9,
-    Student_Enrolled_Count: 81377,
+    Student_Enrolled_Count: 87858,
     No_Of_Modules: 5,
     Plan_Cost: [549, 649, 749],
   },
@@ -111,7 +111,7 @@ window.course_data = [
     Language: ["English", "Hindi"],
     Duration: 20,
     Rating: 4.95,
-    Student_Enrolled_Count: 27000,
+    Student_Enrolled_Count: 30231,
     No_Of_Modules: 10,
     Plan_Cost: [1299, 1699, 1999],
   },
@@ -126,7 +126,7 @@ window.course_data = [
     Language: ["English"],
     Duration: 12,
     Rating: 4.92,
-    Student_Enrolled_Count: 12145,
+    Student_Enrolled_Count: 16040,
     No_Of_Modules: 8,
     Plan_Cost: [1449, 1549, 1749],
   },
@@ -141,7 +141,7 @@ window.course_data = [
     Language: ["English"],
     Duration: 10,
     Rating: 4.88,
-    Student_Enrolled_Count: 2332,
+    Student_Enrolled_Count: 3089,
     No_Of_Modules: 8,
     Plan_Cost: [1959, 2159, 2359],
   },
@@ -156,7 +156,7 @@ window.course_data = [
     Language: ["English"],
     Duration: 8,
     Rating: 4.93,
-    Student_Enrolled_Count: 4383,
+    Student_Enrolled_Count: 5006,
     No_Of_Modules: 4,
     Plan_Cost: [1589, 1689, 1889],
   },
@@ -171,7 +171,7 @@ window.course_data = [
     Language: ["English", "Hindi"],
     Duration: 5,
     Rating: 4.88,
-    Student_Enrolled_Count: 38831,
+    Student_Enrolled_Count: 41073,
     No_Of_Modules: 7,
     Plan_Cost: [759, 859, 959],
   },
@@ -186,7 +186,7 @@ window.course_data = [
     Language: ["English"],
     Duration: 20,
     Rating: 4.87,
-    Student_Enrolled_Count: 2042,
+    Student_Enrolled_Count: 3343,
     No_Of_Modules: 8,
     Plan_Cost: [1947, 2047, 2147],
   },
@@ -201,7 +201,7 @@ window.course_data = [
     Language: ["English"],
     Duration: 2,
     Rating: 4.92,
-    Student_Enrolled_Count: 701,
+    Student_Enrolled_Count: 1860,
     No_Of_Modules: 10,
     Plan_Cost: [429, 479, 499],
   },
@@ -216,7 +216,7 @@ window.course_data = [
     Language: ["English"],
     Duration: 1,
     Rating: 1.0,
-    Student_Enrolled_Count: 7917,
+    Student_Enrolled_Count: 84278,
     No_Of_Modules: 3,
     Plan_Cost: [397, 0, 497],
   },
@@ -231,7 +231,7 @@ window.course_data = [
     Language: ["English", "Hindi"],
     Duration: 3,
     Rating: 1.0,
-    Student_Enrolled_Count: 7927,
+    Student_Enrolled_Count: 8587,
     No_Of_Modules: 3,
     Plan_Cost: [799, 899, 999],
   },
@@ -245,8 +245,8 @@ window.course_data = [
     Medium: null,
     Language: ["English", "Hindi"],
     Duration: 4,
-    Rating: 1.0,
-    Student_Enrolled_Count: 0,
+    Rating: 4.0,
+    Student_Enrolled_Count: 529,
     No_Of_Modules: 4,
     Plan_Cost: [399, 499, 699],
   },
@@ -300,16 +300,31 @@ const getCurrentUnixTimestamp = () => {
   return Math.floor(Date.now() / 1000).toString();
 };
 
+// Track if event listener has been added to prevent duplicates
+let freeCourseListenerAdded = false;
+
 const freeCourse = () => {
   const submitButton = document.getElementById("btn4");
-  if (submitButton) {
+
+  // Only proceed if button exists and listener hasn't been added yet
+  if (submitButton && !freeCourseListenerAdded) {
+    // Mark that we're adding the listener
+    freeCourseListenerAdded = true;
+
+    // Add a custom attribute to track this button
+    submitButton.setAttribute("data-free-course-initialized", "true");
+
     submitButton.addEventListener("click", async () => {
       const course = getCourseFromURL(window.course_data);
       const email = document.getElementById("free-submit-btn").value;
-      if (email) {
+      const isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      };
+      if (email && isValidEmail(email) && course) {
         window.webengage.user.setAttribute("we_email", email);
         const response = await fetch(
-          `https://webveda-checkout.onrender.com/api/userCheck/${course.Course_id}`,
+          `https://syncsphere-hiv6.onrender.com/api/userCheck/${course.Course_id}`,
           {
             method: "POST",
             headers: {
@@ -362,9 +377,21 @@ const freeCourse = () => {
         }, 2000);
       }
     });
-  } else {
-    console.error("Submit button not found");
-    return;
+
+    console.log("Free course event listener added to button");
+  }
+};
+
+// Function to reset the listener flag when DOM changes
+const resetFreeCourseListener = () => {
+  // Check if the button with our attribute still exists
+  const existingButton = document.querySelector(
+    '[data-free-course-initialized="true"]'
+  );
+  if (!existingButton) {
+    // Button was replaced, reset the flag
+    freeCourseListenerAdded = false;
+    console.log("Free course button replaced, listener flag reset");
   }
 };
 
@@ -438,11 +465,68 @@ const init = () => {
   }
 };
 
+// Set up MutationObserver to watch for DOM changes inside #pricingreplace
+const observer = new MutationObserver((mutations) => {
+  let shouldRunFreeCourse = false;
+
+  for (const mutation of mutations) {
+    if (mutation.type === "childList") {
+      // Check if any added nodes contain the button we're looking for
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          // Check if the added element itself is the button
+          if (node.id === "btn4") {
+            shouldRunFreeCourse = true;
+            break;
+          }
+          // Check if the added element contains the button
+          if (node.querySelector && node.querySelector("#btn4")) {
+            shouldRunFreeCourse = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // Reset listener flag first to check if button was replaced
+  resetFreeCourseListener();
+
+  // Run freeCourse if we detected relevant DOM changes
+  if (shouldRunFreeCourse) {
+    console.log("DOM mutation detected in #pricingreplace, running freeCourse");
+    freeCourse();
+  }
+});
+
+// Function to start observing when #pricingreplace is available
+const startObserving = () => {
+  const pricingReplace = document.getElementById("pricingreplace");
+  if (pricingReplace) {
+    // Start observing the #pricingreplace element for changes
+    observer.observe(pricingReplace, {
+      childList: true,
+      subtree: true,
+    });
+    console.log("Started observing #pricingreplace for DOM changes");
+  } else {
+    // If #pricingreplace doesn't exist yet, try again in a bit
+    setTimeout(startObserving, 100);
+  }
+};
+
+// Start observing when DOM is ready
+startObserving();
+
 // Initial run
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
+  document.addEventListener("DOMContentLoaded", () => {
+    init();
+    freeCourse(); // Initial run for freeCourse
+  });
 } else {
   init();
+  freeCourse(); // Initial run for freeCourse
 }
 
 // Monitor URL changes
