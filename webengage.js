@@ -304,15 +304,21 @@ const getCurrentUnixTimestamp = () => {
 let freeCourseListenerAdded = false;
 
 const freeCourse = () => {
+  console.log("🎯 freeCourse() called");
   const submitButton = document.getElementById("btn4");
+  console.log("🔍 Looking for btn4, found:", submitButton ? "YES" : "NO");
+  console.log("🔒 Listener already added:", freeCourseListenerAdded);
 
   // Only proceed if button exists and listener hasn't been added yet
   if (submitButton && !freeCourseListenerAdded) {
+    console.log("✅ Button found and no listener added, proceeding...");
     // Mark that we're adding the listener
     freeCourseListenerAdded = true;
+    console.log("🔒 Set freeCourseListenerAdded to true");
 
     // Add a custom attribute to track this button
     submitButton.setAttribute("data-free-course-initialized", "true");
+    console.log("🏷️ Added tracking attribute to button");
 
     submitButton.addEventListener("click", async () => {
       const course = getCourseFromURL(window.course_data);
@@ -384,14 +390,25 @@ const freeCourse = () => {
 
 // Function to reset the listener flag when DOM changes
 const resetFreeCourseListener = () => {
+  console.log("🔄 resetFreeCourseListener() called");
   // Check if the button with our attribute still exists
   const existingButton = document.querySelector(
     '[data-free-course-initialized="true"]'
   );
+  console.log(
+    "🔍 Looking for button with tracking attribute, found:",
+    existingButton ? "YES" : "NO"
+  );
+
   if (!existingButton) {
     // Button was replaced, reset the flag
     freeCourseListenerAdded = false;
-    console.log("Free course button replaced, listener flag reset");
+    console.log("🔄 Free course button replaced, listener flag reset to false");
+  } else {
+    console.log(
+      "✅ Button with tracking attribute still exists, keeping flag as:",
+      freeCourseListenerAdded
+    );
   }
 };
 
@@ -467,22 +484,63 @@ const init = () => {
 
 // Set up MutationObserver to watch for DOM changes inside #pricingreplace
 const observer = new MutationObserver((mutations) => {
+  console.log(
+    "🔍 MutationObserver triggered with",
+    mutations.length,
+    "mutations"
+  );
   let shouldRunFreeCourse = false;
 
   for (const mutation of mutations) {
+    console.log("📝 Mutation type:", mutation.type, "Target:", mutation.target);
+
     if (mutation.type === "childList") {
+      console.log(
+        "👶 Added nodes:",
+        mutation.addedNodes.length,
+        "Removed nodes:",
+        mutation.removedNodes.length
+      );
+
       // Check if any added nodes contain the button we're looking for
       for (const node of mutation.addedNodes) {
+        console.log(
+          "🔍 Checking node:",
+          node.nodeType === Node.ELEMENT_NODE
+            ? node.tagName + (node.id ? "#" + node.id : "")
+            : "Text node"
+        );
+
         if (node.nodeType === Node.ELEMENT_NODE) {
           // Check if the added element itself is the button
           if (node.id === "btn4") {
+            console.log("✅ Found btn4 directly in added node");
             shouldRunFreeCourse = true;
             break;
           }
           // Check if the added element contains the button
           if (node.querySelector && node.querySelector("#btn4")) {
+            console.log("✅ Found btn4 inside added node using querySelector");
             shouldRunFreeCourse = true;
             break;
+          }
+
+          // Also check for any button elements that might be btn4
+          const buttons = node.querySelectorAll
+            ? node.querySelectorAll("button")
+            : [];
+          console.log("🔘 Buttons found in node:", buttons.length);
+          for (const button of buttons) {
+            console.log(
+              "🔘 Button:",
+              button.id || "no-id",
+              button.textContent?.substring(0, 20) + "..."
+            );
+            if (button.id === "btn4") {
+              console.log("✅ Found btn4 button in added node");
+              shouldRunFreeCourse = true;
+              break;
+            }
           }
         }
       }
@@ -490,41 +548,58 @@ const observer = new MutationObserver((mutations) => {
   }
 
   // Reset listener flag first to check if button was replaced
+  console.log("🔄 Checking if button was replaced...");
   resetFreeCourseListener();
 
   // Run freeCourse if we detected relevant DOM changes
   if (shouldRunFreeCourse) {
-    console.log("DOM mutation detected in #pricingreplace, running freeCourse");
+    console.log(
+      "🚀 DOM mutation detected in #pricingreplace, running freeCourse"
+    );
     freeCourse();
+  } else {
+    console.log("❌ No relevant changes detected, skipping freeCourse");
   }
 });
 
 // Function to start observing when #pricingreplace is available
 const startObserving = () => {
+  console.log("🔍 Looking for #pricingreplace element...");
   const pricingReplace = document.getElementById("pricingreplace");
   if (pricingReplace) {
+    console.log("✅ Found #pricingreplace, starting observation");
+    console.log(
+      "📍 #pricingreplace content:",
+      pricingReplace.innerHTML.substring(0, 200) + "..."
+    );
+
     // Start observing the #pricingreplace element for changes
     observer.observe(pricingReplace, {
       childList: true,
       subtree: true,
     });
-    console.log("Started observing #pricingreplace for DOM changes");
+    console.log("🎯 Started observing #pricingreplace for DOM changes");
   } else {
+    console.log("⏳ #pricingreplace not found, retrying in 100ms...");
     // If #pricingreplace doesn't exist yet, try again in a bit
     setTimeout(startObserving, 100);
   }
 };
 
 // Start observing when DOM is ready
+console.log("🚀 Starting initialization...");
 startObserving();
 
 // Initial run
 if (document.readyState === "loading") {
+  console.log("📄 DOM still loading, waiting for DOMContentLoaded...");
   document.addEventListener("DOMContentLoaded", () => {
+    console.log("📄 DOMContentLoaded fired, running init and freeCourse");
     init();
     freeCourse(); // Initial run for freeCourse
   });
 } else {
+  console.log("📄 DOM already loaded, running init and freeCourse immediately");
   init();
   freeCourse(); // Initial run for freeCourse
 }
