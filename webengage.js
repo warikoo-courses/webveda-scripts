@@ -287,7 +287,6 @@ function getCourseFromURL(courseData) {
   return (
     courseData.find((course) => {
       // Check if the course link matches the current URL (excluding query params)
-      console.log(currentURL, course.Link);
       if (!course || !course.Link) return false;
       const isLinkMatch = currentURL.startsWith(course.Link);
 
@@ -304,21 +303,15 @@ const getCurrentUnixTimestamp = () => {
 let freeCourseListenerAdded = false;
 
 const freeCourse = () => {
-  console.log("🎯 freeCourse() called");
   const submitButton = document.getElementById("btn4");
-  console.log("🔍 Looking for btn4, found:", submitButton ? "YES" : "NO");
-  console.log("🔒 Listener already added:", freeCourseListenerAdded);
 
   // Only proceed if button exists and listener hasn't been added yet
   if (submitButton && !freeCourseListenerAdded) {
-    console.log("✅ Button found and no listener added, proceeding...");
     // Mark that we're adding the listener
     freeCourseListenerAdded = true;
-    console.log("🔒 Set freeCourseListenerAdded to true");
 
     // Add a custom attribute to track this button
     submitButton.setAttribute("data-free-course-initialized", "true");
-    console.log("🏷️ Added tracking attribute to button");
 
     submitButton.addEventListener("click", async () => {
       const course = getCourseFromURL(window.course_data);
@@ -383,38 +376,23 @@ const freeCourse = () => {
         }, 2000);
       }
     });
-
-    console.log("Free course event listener added to button");
   }
 };
 
 // Function to reset the listener flag when DOM changes
 const resetFreeCourseListener = () => {
-  console.log("🔄 resetFreeCourseListener() called");
   // Check if the button with our attribute still exists
   const existingButton = document.querySelector(
     '[data-free-course-initialized="true"]'
-  );
-  console.log(
-    "🔍 Looking for button with tracking attribute, found:",
-    existingButton ? "YES" : "NO"
   );
 
   if (!existingButton) {
     // Button was replaced, reset the flag
     freeCourseListenerAdded = false;
-    console.log("🔄 Free course button replaced, listener flag reset to false");
-  } else {
-    console.log(
-      "✅ Button with tracking attribute still exists, keeping flag as:",
-      freeCourseListenerAdded
-    );
   }
 };
 
 const init = () => {
-  console.log("Running init with URL:", window.location.pathname); // Debug logging
-
   if (
     window.location.host === "www.webveda.com" ||
     window.location.host === "webveda.com" ||
@@ -439,7 +417,6 @@ const init = () => {
             : "+91" + formDetails.whatsapp;
         window.webengage.user.setAttribute("we_phone", formDetails.whatsapp);
         window.webengage.user.setAttribute("we_email", formDetails.email);
-        console.log("Logged in", formDetails);
 
         const price1 =
           document.getElementById("testing123")?.firstElementChild
@@ -450,12 +427,10 @@ const init = () => {
           .firstElementChild.getAttribute("data-framer-name");
         const currentUrl2 = new URL(window.location.href);
         currentUrl2.searchParams.set("course", course1);
-        console.log(price1, priceNumber);
         const courseResponse = await fetch(
           `https://webveda-checkout.onrender.com/api/v1/course_full_name/${course1}`
         );
         const courseData = await courseResponse.json();
-        console.log(courseData);
         let wePayload = {
           Title: courseData.full_name,
           Purchase_Link: currentUrl2.toString(),
@@ -467,7 +442,6 @@ const init = () => {
           Amount: priceNumber,
         };
         window.webengage.track("Purchase Initiated", wePayload);
-        console.log("Event Init Fired", wePayload);
 
         async function getIPAddress() {
           const ip_data = await fetch(
@@ -486,50 +460,32 @@ const init = () => {
 let btn4CheckInterval = null;
 
 const startCheckingForBtn4 = () => {
-  console.log("🔍 Starting interval to check for btn4 button...");
-
   btn4CheckInterval = setInterval(() => {
-    console.log("⏰ Checking for btn4 button...");
     const btn4 = document.getElementById("btn4");
 
     if (btn4) {
-      console.log("✅ Found btn4 button!");
-      console.log("🔒 Current listener flag:", freeCourseListenerAdded);
-
       // Clear the interval since we found the button
       clearInterval(btn4CheckInterval);
       btn4CheckInterval = null;
-      console.log("🛑 Cleared interval");
 
       // Reset listener flag to allow adding listener to new button
       resetFreeCourseListener();
 
       // Run freeCourse
-      console.log("🚀 Running freeCourse...");
       freeCourse();
-    } else {
-      console.log("❌ btn4 button not found yet");
     }
   }, 200); // Check every 200ms
 };
 
 // Start checking for btn4 when DOM is ready
-console.log("🚀 Starting initialization...");
 
 // Initial run
 if (document.readyState === "loading") {
-  console.log("📄 DOM still loading, waiting for DOMContentLoaded...");
   document.addEventListener("DOMContentLoaded", () => {
-    console.log(
-      "📄 DOMContentLoaded fired, running init and starting btn4 check"
-    );
     init();
     startCheckingForBtn4(); // Start checking for btn4
   });
 } else {
-  console.log(
-    "📄 DOM already loaded, running init and starting btn4 check immediately"
-  );
   init();
   startCheckingForBtn4(); // Start checking for btn4
 }
@@ -539,10 +495,8 @@ let lastUrl = window.location.href;
 
 // Method 1: Using popstate event (browser back/forward buttons)
 window.addEventListener("popstate", () => {
-  console.log("popstate detected");
   const currentUrl = window.location.href;
   if (currentUrl !== lastUrl) {
-    console.log(`URL changed from ${lastUrl} to ${currentUrl}`);
     lastUrl = currentUrl;
     init();
   }
@@ -556,7 +510,6 @@ history.pushState = function () {
   originalPushState.apply(this, arguments);
   const currentUrl = window.location.href;
   if (currentUrl !== lastUrl) {
-    console.log(`URL changed via pushState from ${lastUrl} to ${currentUrl}`);
     lastUrl = currentUrl;
     init();
   }
@@ -566,9 +519,6 @@ history.replaceState = function () {
   originalReplaceState.apply(this, arguments);
   const currentUrl = window.location.href;
   if (currentUrl !== lastUrl) {
-    console.log(
-      `URL changed via replaceState from ${lastUrl} to ${currentUrl}`
-    );
     lastUrl = currentUrl;
     init();
   }
