@@ -482,126 +482,56 @@ const init = () => {
   }
 };
 
-// Set up MutationObserver to watch for DOM changes inside #pricingreplace
-const observer = new MutationObserver((mutations) => {
-  console.log(
-    "🔍 MutationObserver triggered with",
-    mutations.length,
-    "mutations"
-  );
-  let shouldRunFreeCourse = false;
+// Set up interval to check for btn4 button
+let btn4CheckInterval = null;
 
-  for (const mutation of mutations) {
-    console.log("📝 Mutation type:", mutation.type, "Target:", mutation.target);
+const startCheckingForBtn4 = () => {
+  console.log("🔍 Starting interval to check for btn4 button...");
 
-    if (mutation.type === "childList") {
-      console.log(
-        "👶 Added nodes:",
-        mutation.addedNodes.length,
-        "Removed nodes:",
-        mutation.removedNodes.length
-      );
+  btn4CheckInterval = setInterval(() => {
+    console.log("⏰ Checking for btn4 button...");
+    const btn4 = document.getElementById("btn4");
 
-      // Check if any added nodes contain the button we're looking for
-      for (const node of mutation.addedNodes) {
-        console.log(
-          "🔍 Checking node:",
-          node.nodeType === Node.ELEMENT_NODE
-            ? node.tagName + (node.id ? "#" + node.id : "")
-            : "Text node"
-        );
+    if (btn4) {
+      console.log("✅ Found btn4 button!");
+      console.log("🔒 Current listener flag:", freeCourseListenerAdded);
 
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          // Check if the added element itself is the button
-          if (node.id === "btn4") {
-            console.log("✅ Found btn4 directly in added node");
-            shouldRunFreeCourse = true;
-            break;
-          }
-          // Check if the added element contains the button
-          if (node.querySelector && node.querySelector("#btn4")) {
-            console.log("✅ Found btn4 inside added node using querySelector");
-            shouldRunFreeCourse = true;
-            break;
-          }
+      // Clear the interval since we found the button
+      clearInterval(btn4CheckInterval);
+      btn4CheckInterval = null;
+      console.log("🛑 Cleared interval");
 
-          // Also check for any button elements that might be btn4
-          const buttons = node.querySelectorAll
-            ? node.querySelectorAll("button")
-            : [];
-          console.log("🔘 Buttons found in node:", buttons.length);
-          for (const button of buttons) {
-            console.log(
-              "🔘 Button:",
-              button.id || "no-id",
-              button.textContent?.substring(0, 20) + "..."
-            );
-            if (button.id === "btn4") {
-              console.log("✅ Found btn4 button in added node");
-              shouldRunFreeCourse = true;
-              break;
-            }
-          }
-        }
-      }
+      // Reset listener flag to allow adding listener to new button
+      resetFreeCourseListener();
+
+      // Run freeCourse
+      console.log("🚀 Running freeCourse...");
+      freeCourse();
+    } else {
+      console.log("❌ btn4 button not found yet");
     }
-  }
-
-  // Reset listener flag first to check if button was replaced
-  console.log("🔄 Checking if button was replaced...");
-  resetFreeCourseListener();
-
-  // Run freeCourse if we detected relevant DOM changes
-  if (shouldRunFreeCourse) {
-    console.log(
-      "🚀 DOM mutation detected in #pricingreplace, running freeCourse"
-    );
-    freeCourse();
-  } else {
-    console.log("❌ No relevant changes detected, skipping freeCourse");
-  }
-});
-
-// Function to start observing when #pricingreplace is available
-const startObserving = () => {
-  console.log("🔍 Looking for #pricingreplace element...");
-  const pricingReplace = document.getElementById("pricingreplace");
-  if (pricingReplace) {
-    console.log("✅ Found #pricingreplace, starting observation");
-    console.log(
-      "📍 #pricingreplace content:",
-      pricingReplace.innerHTML.substring(0, 200) + "..."
-    );
-
-    // Start observing the #pricingreplace element for changes
-    observer.observe(pricingReplace, {
-      childList: true,
-      subtree: true,
-    });
-    console.log("🎯 Started observing #pricingreplace for DOM changes");
-  } else {
-    console.log("⏳ #pricingreplace not found, retrying in 100ms...");
-    // If #pricingreplace doesn't exist yet, try again in a bit
-    setTimeout(startObserving, 100);
-  }
+  }, 200); // Check every 200ms
 };
 
-// Start observing when DOM is ready
+// Start checking for btn4 when DOM is ready
 console.log("🚀 Starting initialization...");
-startObserving();
 
 // Initial run
 if (document.readyState === "loading") {
   console.log("📄 DOM still loading, waiting for DOMContentLoaded...");
   document.addEventListener("DOMContentLoaded", () => {
-    console.log("📄 DOMContentLoaded fired, running init and freeCourse");
+    console.log(
+      "📄 DOMContentLoaded fired, running init and starting btn4 check"
+    );
     init();
-    freeCourse(); // Initial run for freeCourse
+    startCheckingForBtn4(); // Start checking for btn4
   });
 } else {
-  console.log("📄 DOM already loaded, running init and freeCourse immediately");
+  console.log(
+    "📄 DOM already loaded, running init and starting btn4 check immediately"
+  );
   init();
-  freeCourse(); // Initial run for freeCourse
+  startCheckingForBtn4(); // Start checking for btn4
 }
 
 // Monitor URL changes
