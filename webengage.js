@@ -348,17 +348,19 @@ const freeCourse = () => {
           submitButton.style.border = "none";
           submitButton.style.color = "white";
           submitButton.textContent = "Submitted";
+          submitButton.disabled = true;
         } else {
-          submitButton.style.backgroundColor = "##ab0202";
+          submitButton.style.backgroundColor = "#ab0202";
           submitButton.style.cursor = "not-allowed";
           submitButton.style.pointerEvents = "none";
           submitButton.style.opacity = "0.5";
           submitButton.style.border = "none";
           submitButton.style.color = "white";
           submitButton.textContent = "Email already exists";
+          submitButton.disabled = true;
         }
       } else {
-        submitButton.style.backgroundColor = "##ab0202";
+        submitButton.style.backgroundColor = "#ab0202";
         submitButton.style.cursor = "not-allowed";
         submitButton.style.pointerEvents = "none";
         submitButton.style.opacity = "0.5";
