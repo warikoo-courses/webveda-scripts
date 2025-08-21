@@ -321,6 +321,7 @@ const freeCourse = () => {
         return emailRegex.test(email);
       };
       if (email && isValidEmail(email) && course) {
+        window.webengage.user.login(email.toLowerCase());
         window.webengage.user.setAttribute("we_email", email);
         const response = await fetch(
           `https://syncsphere-hiv6.onrender.com/api/userCheck/${course.Course_id}`,

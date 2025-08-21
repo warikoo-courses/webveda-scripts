@@ -488,6 +488,7 @@
           );
 
           const { clientSecret } = await response.json();
+          searchParams.delete("basicDetails");
           modal.classList.add("wv-hidden");
           (
             await stripe.initEmbeddedCheckout({
