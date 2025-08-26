@@ -337,11 +337,6 @@ const freeCourse = () => {
         );
         const data = await response.json();
         if (data.status === "success") {
-          window.webengage.track("Free Course Submitted", {
-            Course: course.Title,
-            Email: email,
-            Course_id: course.Course_id,
-          });
           submitButton.style.backgroundColor = "green";
           submitButton.style.cursor = "pointer";
           submitButton.style.pointerEvents = "auto";
