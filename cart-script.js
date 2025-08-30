@@ -23,8 +23,12 @@
     const submitBtn = document.querySelector("#submitform");
     const userForm = document.getElementById("detailsform");
 
-    submitBtn.addEventListener("click", () => {
-      userForm.submit();
+    submitBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      // Call the form's submit handler directly
+      if (userForm.onsubmit) {
+        userForm.onsubmit(e);
+      }
     });
 
     if (!userForm) {
