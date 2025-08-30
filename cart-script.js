@@ -268,6 +268,14 @@
                 whatsapp
               );
             },
+            modal: {
+              ondismiss: () => {
+                isProcessing = false;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("loading");
+                submitBtn.style.opacity = "1";
+              },
+            },
             theme: { color: "#3399cc" },
           });
 
