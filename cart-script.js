@@ -308,6 +308,13 @@
             })
           ).mount("#checkout");
           document.getElementById("checkout").style.display = "block";
+          document.getElementById("closestripe").style.display = "block";
+          document
+            .getElementById("closestripe")
+            .addEventListener("click", () => {
+              document.getElementById("checkout").style.display = "none";
+              window.location.reload();
+            });
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
         } else {
