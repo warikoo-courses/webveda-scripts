@@ -194,6 +194,7 @@
         // Set processing flag to prevent multiple submissions
         isProcessing = true;
         submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.5";
 
         // Add timeout to prevent button from being stuck
         setTimeout(() => {
@@ -202,7 +203,7 @@
             isProcessing = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
-            submitBtn.textContent = "Proceed to Purchase";
+            submitBtn.style.opacity = "1";
           }
         }, 30000); // 30 seconds timeout
 
@@ -217,6 +218,7 @@
         //Check if cart course is loaded
         if (course_name.length < 1) {
           isProcessing = false;
+          submitBtn.style.opacity = "1";
           return;
         }
 
@@ -242,6 +244,7 @@
             isProcessing = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
+            submitBtn.style.opacity = "1";
             alert("Payment initialization failed. Please try again.");
             return;
           }
@@ -272,16 +275,19 @@
             isProcessing = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
+            submitBtn.style.opacity = "1";
             alert(res.error.description);
           });
           rzp1.open();
           // Note: isProcessing remains true until payment is completed or failed
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
+          submitBtn.style.opacity = "1";
         } else {
           isProcessing = false;
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
+          submitBtn.style.opacity = "1";
         }
       };
     } else {
@@ -296,6 +302,7 @@
 
         // Set processing flag to prevent multiple submissions
         isProcessing = true;
+        submitBtn.style.opacity = "0.5";
 
         // Add timeout to prevent button from being stuck
         setTimeout(() => {
@@ -304,7 +311,7 @@
             isProcessing = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
-            submitBtn.textContent = "Proceed to Purchase";
+            submitBtn.style.opacity = "1";
           }
         }, 30000); // 30 seconds timeout
 
@@ -365,10 +372,12 @@
           // Note: isProcessing remains true until checkout is closed or page is reloaded
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
+          submitBtn.style.opacity = "1";
         } else {
           isProcessing = false;
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
+          submitBtn.style.opacity = "1";
           console.log("Form is not valid");
         }
       };
