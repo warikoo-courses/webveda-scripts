@@ -16,6 +16,8 @@
     return uniqueCart;
   }
 
+  let isProcessing = false; // Flag to prevent multiple submissions
+
   async function initializePaymentForm() {
     const course_name = getlocalStorageCart();
     const submitBtn = document.querySelector("#submitform");
@@ -24,6 +26,13 @@
     // Add Event Listener to Submit Button
     submitBtn.addEventListener("click", (e) => {
       e.preventDefault();
+
+      // Prevent multiple rapid clicks
+      if (isProcessing) {
+        console.log("Payment already in progress, please wait...");
+        return;
+      }
+
       // Call the form's submit handler directly
       if (userForm.onsubmit) {
         console.log("Calling form submit handler");
@@ -181,7 +190,21 @@
     if (country === "IN") {
       userForm.onsubmit = async (e) => {
         e.preventDefault();
+
+        // Set processing flag to prevent multiple submissions
+        isProcessing = true;
         submitBtn.disabled = true;
+
+        // Add timeout to prevent button from being stuck
+        setTimeout(() => {
+          if (isProcessing) {
+            console.log("Payment timeout - resetting button state");
+            isProcessing = false;
+            submitBtn.disabled = false;
+            submitBtn.classList.remove("loading");
+            submitBtn.textContent = "Proceed to Purchase";
+          }
+        }, 30000); // 30 seconds timeout
 
         // Get User Details From Form
         const formData = new FormData(userForm);
@@ -193,6 +216,7 @@
 
         //Check if cart course is loaded
         if (course_name.length < 1) {
+          isProcessing = false;
           return;
         }
 
@@ -215,6 +239,7 @@
 
           //Check if Payment Array is Present and has 2 elements
           if (!paymentArray || paymentArray.length !== 2) {
+            isProcessing = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
             alert("Payment initialization failed. Please try again.");
@@ -243,11 +268,18 @@
             theme: { color: "#3399cc" },
           });
 
-          rzp1.on("payment.failed", (res) => alert(res.error.description));
+          rzp1.on("payment.failed", (res) => {
+            isProcessing = false;
+            submitBtn.disabled = false;
+            submitBtn.classList.remove("loading");
+            alert(res.error.description);
+          });
           rzp1.open();
+          // Note: isProcessing remains true until payment is completed or failed
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
         } else {
+          isProcessing = false;
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
         }
@@ -261,6 +293,20 @@
 
       userForm.onsubmit = async (e) => {
         e.preventDefault();
+
+        // Set processing flag to prevent multiple submissions
+        isProcessing = true;
+
+        // Add timeout to prevent button from being stuck
+        setTimeout(() => {
+          if (isProcessing) {
+            console.log("Payment timeout - resetting button state");
+            isProcessing = false;
+            submitBtn.disabled = false;
+            submitBtn.classList.remove("loading");
+            submitBtn.textContent = "Proceed to Purchase";
+          }
+        }, 30000); // 30 seconds timeout
 
         //Get User Details From Form
         const formData = new FormData(userForm);
@@ -316,9 +362,11 @@
               document.getElementById("closestripe").style.display = "none";
               window.location.reload();
             });
+          // Note: isProcessing remains true until checkout is closed or page is reloaded
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
         } else {
+          isProcessing = false;
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
           console.log("Form is not valid");
