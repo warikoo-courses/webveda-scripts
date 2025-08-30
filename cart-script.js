@@ -392,74 +392,10 @@
     }
   }
 
-  function initializeCertificate() {
-    let retryCount = 0;
-    const maxRetries = 5;
-    const retryDelay = 500;
-
-    function tryInitialize() {
-      const nameInput = document.getElementsByName("name")[0];
-      const displayName = document.getElementById("certname");
-      const certDate = document.getElementById("certdate");
-
-      if (nameInput && displayName) {
-        // Set initial font styling
-        displayName.style.fontSize = "16px";
-        displayName.style.fontFamily = "Rethink Sans";
-        displayName.style.fontWeight = "bold";
-        displayName.style.color = "#000000";
-        displayName.style.textAlign = "center";
-        displayName.style.position = "absolute";
-        displayName.style.top = "55%";
-        displayName.style.right = "20%";
-
-        certDate.style.fontSize = "16px";
-        certDate.style.fontFamily = "Rethink Sans";
-        certDate.style.fontWeight = "bold";
-        certDate.style.color = "#000000";
-        certDate.style.textAlign = "center";
-        certDate.style.position = "absolute";
-        certDate.style.top = "80%";
-        certDate.style.right = "73%";
-        certDate.textContent = new Date().toLocaleDateString();
-        // Listen for input changes
-        nameInput.addEventListener("input", (e) => {
-          displayName.textContent = e.target.value;
-        });
-
-        // Set initial value if input already has content
-        if (nameInput.value) {
-          displayName.textContent = nameInput.value;
-        }
-
-        console.log("Certificate initialization successful");
-        return true;
-      } else {
-        retryCount++;
-        if (retryCount < maxRetries) {
-          console.log(
-            `Certificate elements not found, retrying ${retryCount}/${maxRetries} in ${retryDelay}ms...`
-          );
-          setTimeout(tryInitialize, retryDelay);
-        } else {
-          console.log(
-            "Certificate initialization failed after maximum retries"
-          );
-        }
-        return false;
-      }
-    }
-
-    // Start the retry process
-    tryInitialize();
-  }
-
   // Initialize when DOM is loaded
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initializePaymentForm);
-    document.addEventListener("DOMContentLoaded", initializeCertificate);
   } else {
     initializePaymentForm();
-    initializeCertificate();
   }
 })();
