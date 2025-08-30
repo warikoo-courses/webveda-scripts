@@ -313,6 +313,7 @@
             .getElementById("closestripe")
             .addEventListener("click", () => {
               document.getElementById("checkout").style.display = "none";
+              document.getElementById("closestripe").style.display = "none";
               window.location.reload();
             });
           submitBtn.disabled = false;
