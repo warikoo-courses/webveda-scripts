@@ -169,8 +169,6 @@
       userForm.onsubmit = async (e) => {
         e.preventDefault();
         submitBtn.disabled = true;
-        submitBtn.classList.add("loading");
-        submitBtn.textContent = "Loading...";
 
         const formData = new FormData(userForm);
         console.log(formData);
@@ -292,27 +290,6 @@
       };
     }
   }
-
-  // Set up MutationObserver to watch for DOM changes
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-        // Check if we're on a page that needs the payment form
-        if (
-          window.location.pathname.includes("checkout") ||
-          window.location.search.includes("basicDetails=true")
-        ) {
-          initializePaymentForm();
-        }
-      }
-    }
-  });
-
-  // Start observing the document body for changes
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
 
   // Initialize when DOM is loaded
   if (document.readyState === "loading") {
