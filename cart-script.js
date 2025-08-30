@@ -110,31 +110,31 @@
       let isValid = true;
 
       if (name.length < 2) {
-        document.getElementById("nameError").textContent =
+        document.getElementById("nameerror").textContent =
           "Name must be at least 2 characters long";
         console.log("Name must be at least 2 characters long");
         isValid = false;
       } else {
-        document.getElementById("nameError").textContent = "";
+        document.getElementById("nameerror").textContent = "";
       }
 
       if (whatsapp.length < 9) {
-        document.getElementById("whatsappError").textContent =
+        document.getElementById("whatsapperror").textContent =
           "Whatsapp must be at least 9 characters long";
         console.log("Whatsapp must be at least 9 characters long");
         isValid = false;
       } else {
-        document.getElementById("whatsappError").textContent = "";
+        document.getElementById("whatsapperror").textContent = "";
       }
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        document.getElementById("emailError").textContent =
+        document.getElementById("emailerror").textContent =
           "Please enter a valid email address";
         isValid = false;
         console.log("Please enter a valid email address");
       } else {
-        document.getElementById("emailError").textContent = "";
+        document.getElementById("emailerror").textContent = "";
       }
 
       return isValid;
