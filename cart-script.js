@@ -17,8 +17,6 @@
   }
 
   async function initializePaymentForm() {
-    const url_str = window.location.href;
-    const url = new URL(url_str);
     const course_name = getlocalStorageCart();
     const submitBtn = document.querySelector("#submitform");
     const userForm = document.getElementById("detailsform");
@@ -114,18 +112,27 @@
       if (name.length < 2) {
         document.getElementById("nameError").textContent =
           "Name must be at least 2 characters long";
+        console.log("Name must be at least 2 characters long");
         isValid = false;
       } else {
         document.getElementById("nameError").textContent = "";
       }
 
-      document.getElementById("whatsappError").textContent = "";
+      if (whatsapp.length < 9) {
+        document.getElementById("whatsappError").textContent =
+          "Whatsapp must be at least 9 characters long";
+        console.log("Whatsapp must be at least 9 characters long");
+        isValid = false;
+      } else {
+        document.getElementById("whatsappError").textContent = "";
+      }
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         document.getElementById("emailError").textContent =
           "Please enter a valid email address";
         isValid = false;
+        console.log("Please enter a valid email address");
       } else {
         document.getElementById("emailError").textContent = "";
       }
@@ -182,22 +189,24 @@
         }
 
         if (ip_data) {
-          whatsapp = ip_data.country_calling_code + whatsapp;
+          if (whatsapp.length < 10) {
+            whatsapp = ip_data.country_calling_code + whatsapp;
+          }
         }
 
-        const paymentArray = await generatePayment(
-          course_name_reload,
-          name,
-          ip_data
-        );
-        if (!paymentArray || paymentArray.length !== 2) {
-          submitBtn.disabled = false;
-          submitBtn.classList.remove("loading");
-          alert("Payment initialization failed. Please try again.");
-          return;
-        }
-        console.log(ip_data);
         if (validateForm(name, whatsapp, email)) {
+          const paymentArray = await generatePayment(
+            course_name_reload,
+            name,
+            ip_data
+          );
+          if (!paymentArray || paymentArray.length !== 2) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove("loading");
+            alert("Payment initialization failed. Please try again.");
+            return;
+          }
+          console.log(ip_data);
           const rzp1 = new Razorpay({
             key: "rzp_live_YZSHqiTnfwaXXt",
             currency: "INR",
@@ -224,7 +233,6 @@
           rzp1.open();
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
-          submitBtn.textContent = "Proceed to Purchase";
         } else {
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
