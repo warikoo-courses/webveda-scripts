@@ -26,6 +26,7 @@
       e.preventDefault();
       // Call the form's submit handler directly
       if (userForm.onsubmit) {
+        console.log("Calling form submit handler");
         userForm.onsubmit(e);
       }
     });
@@ -110,7 +111,7 @@
 
     function validateForm(name, whatsapp, email) {
       let isValid = true;
-
+      console.log("Validating Form");
       if (name.length < 2) {
         document.getElementById("nameerror").textContent =
           "Name must be at least 2 characters long";
@@ -252,6 +253,7 @@
         }
       };
     } else {
+      console.log("Stripe Payment");
       //Stripe Payment
       const stripe = Stripe(
         "pk_live_51NramAIh34G26BoL2MEuQMbFzUIHGYgn9SIBs7zJmkya79BMzuxJDle7NINc2BNJRtrDjTIGJrXfTDF0ph1qeCUF00bXyEZeNb"
@@ -308,6 +310,10 @@
           document.getElementById("checkout").style.display = "block";
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
+        } else {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove("loading");
+          console.log("Form is not valid");
         }
       };
     }
