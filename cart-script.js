@@ -400,6 +400,7 @@
     function tryInitialize() {
       const nameInput = document.getElementsByName("name")[0];
       const displayName = document.getElementById("certname");
+      const certDate = document.getElementById("certdate");
 
       if (nameInput && displayName) {
         // Set initial font styling
@@ -409,9 +410,18 @@
         displayName.style.color = "#000000";
         displayName.style.textAlign = "center";
         displayName.style.position = "absolute";
-        displayName.style.top = "45%";
+        displayName.style.top = "55%";
         displayName.style.right = "20%";
 
+        certDate.style.fontSize = "16px";
+        certDate.style.fontFamily = "Rethink Sans";
+        certDate.style.fontWeight = "bold";
+        certDate.style.color = "#000000";
+        certDate.style.textAlign = "center";
+        certDate.style.position = "absolute";
+        certDate.style.top = "80%";
+        certDate.style.right = "73%";
+        certDate.textContent = new Date().toLocaleDateString();
         // Listen for input changes
         nameInput.addEventListener("input", (e) => {
           displayName.textContent = e.target.value;
