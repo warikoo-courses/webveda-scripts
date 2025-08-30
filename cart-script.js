@@ -375,10 +375,36 @@
     }
   }
 
+  function initializeCertificate() {
+    const nameInput = document.getElementsByName("name")[0];
+    const displayName = document.getElementById("certname");
+
+    if (nameInput && displayName) {
+      // Set initial font styling
+      displayName.style.fontSize = "16px";
+      displayName.style.fontFamily = "Rethink Sans";
+      displayName.style.fontWeight = "bold";
+      displayName.style.color = "#000000";
+      displayName.style.textAlign = "center";
+
+      // Listen for input changes
+      nameInput.addEventListener("input", (e) => {
+        displayName.textContent = e.target.value;
+      });
+
+      // Set initial value if input already has content
+      if (nameInput.value) {
+        displayName.textContent = nameInput.value;
+      }
+    }
+  }
+
   // Initialize when DOM is loaded
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initializePaymentForm);
+    document.addEventListener("DOMContentLoaded", initializeCertificate);
   } else {
     initializePaymentForm();
+    initializeCertificate();
   }
 })();
