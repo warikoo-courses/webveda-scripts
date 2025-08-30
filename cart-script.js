@@ -391,6 +391,9 @@
         displayName.style.fontWeight = "bold";
         displayName.style.color = "#000000";
         displayName.style.textAlign = "center";
+        displayName.style.position = "absolute";
+        displayName.style.top = "45%";
+        displayName.style.right = "20%";
 
         // Listen for input changes
         nameInput.addEventListener("input", (e) => {
