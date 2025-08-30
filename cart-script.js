@@ -21,6 +21,7 @@
     const submitBtn = document.querySelector("#submitform");
     const userForm = document.getElementById("detailsform");
 
+    // Add Event Listener to Submit Button
     submitBtn.addEventListener("click", (e) => {
       e.preventDefault();
       // Call the form's submit handler directly
@@ -29,6 +30,7 @@
       }
     });
 
+    // Check if User Form is Present
     if (!userForm) {
       console.log(
         "Payment form elements not found, waiting for them to be available..."
@@ -112,16 +114,18 @@
       if (name.length < 2) {
         document.getElementById("nameerror").textContent =
           "Name must be at least 2 characters long";
+        document.getElementById("nameerror").style.color = "red";
         console.log("Name must be at least 2 characters long");
         isValid = false;
       } else {
         document.getElementById("nameerror").textContent = "";
       }
 
-      if (whatsapp.length < 9) {
+      if (whatsapp.length < 10) {
         document.getElementById("whatsapperror").textContent =
-          "Whatsapp must be at least 9 characters long";
-        console.log("Whatsapp must be at least 9 characters long");
+          "Whatsapp must be at least 10 characters long";
+        document.getElementById("whatsapperror").style.color = "red";
+        console.log("Whatsapp must be at least 10 characters long");
         isValid = false;
       } else {
         document.getElementById("whatsapperror").textContent = "";
@@ -131,6 +135,7 @@
       if (!emailRegex.test(email)) {
         document.getElementById("emailerror").textContent =
           "Please enter a valid email address";
+        document.getElementById("emailerror").style.color = "red";
         isValid = false;
         console.log("Please enter a valid email address");
       } else {
@@ -177,29 +182,37 @@
         e.preventDefault();
         submitBtn.disabled = true;
 
+        // Get User Details From Form
         const formData = new FormData(userForm);
         console.log(formData);
         const name = formData.get("name");
-        let whatsapp = formData.get("phone");
-        const email = formData.get("email");
+        let whatsapp = formData.get("phone").replace(/\s+/g, "");
+        const email = formData.get("email").trim();
         const course_name_reload = getlocalStorageCart();
 
+        //Check if cart course is loaded
         if (course_name.length < 1) {
           return;
         }
 
+        //Check if IP Data is Present
         if (ip_data) {
-          if (whatsapp.length < 10) {
+          //Check if Whatsapp is less than 10 characters add country calling code
+          if (whatsapp.length <= 10) {
             whatsapp = ip_data.country_calling_code + whatsapp;
           }
         }
 
+        //Validate Form - Show Errors if any
         if (validateForm(name, whatsapp, email)) {
+          //Generate Payment Array
           const paymentArray = await generatePayment(
             course_name_reload,
             name,
             ip_data
           );
+
+          //Check if Payment Array is Present and has 2 elements
           if (!paymentArray || paymentArray.length !== 2) {
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
@@ -239,6 +252,7 @@
         }
       };
     } else {
+      //Stripe Payment
       const stripe = Stripe(
         "pk_live_51NramAIh34G26BoL2MEuQMbFzUIHGYgn9SIBs7zJmkya79BMzuxJDle7NINc2BNJRtrDjTIGJrXfTDF0ph1qeCUF00bXyEZeNb"
       );
@@ -246,12 +260,15 @@
       userForm.onsubmit = async (e) => {
         e.preventDefault();
 
-        const name = document.getElementById("name").value.trim();
-        const whatsapp = document
-          .getElementById("whatsapp")
-          .value.replace(/\s+/g, "");
-        const email = document.getElementById("email").value.trim();
+        //Get User Details From Form
+        const formData = new FormData(userForm);
+        console.log(formData);
+        const name = formData.get("name");
+        let whatsapp = formData.get("phone").replace(/\s+/g, "");
+        const email = formData.get("email").trim();
         const course_name_reload = getlocalStorageCart();
+
+        //Validate Form - Show Errors if any
         if (validateForm(name, whatsapp, email)) {
           const url = new URL(window.location.href);
           const timestamp = document.cookie
@@ -283,8 +300,6 @@
           );
 
           const { clientSecret } = await response.json();
-          searchParams.delete("basicDetails");
-          modal.classList.add("wv-hidden");
           (
             await stripe.initEmbeddedCheckout({
               fetchClientSecret: () => clientSecret,
@@ -293,7 +308,6 @@
           document.getElementById("checkout").style.display = "block";
           submitBtn.disabled = false;
           submitBtn.classList.remove("loading");
-          submitBtn.textContent = "Proceed to Purchase";
         }
       };
     }
