@@ -376,27 +376,52 @@
   }
 
   function initializeCertificate() {
-    const nameInput = document.getElementsByName("name")[0];
-    const displayName = document.getElementById("certname");
+    let retryCount = 0;
+    const maxRetries = 5;
+    const retryDelay = 500;
 
-    if (nameInput && displayName) {
-      // Set initial font styling
-      displayName.style.fontSize = "16px";
-      displayName.style.fontFamily = "Rethink Sans";
-      displayName.style.fontWeight = "bold";
-      displayName.style.color = "#000000";
-      displayName.style.textAlign = "center";
+    function tryInitialize() {
+      const nameInput = document.getElementsByName("name")[0];
+      const displayName = document.getElementById("certname");
 
-      // Listen for input changes
-      nameInput.addEventListener("input", (e) => {
-        displayName.textContent = e.target.value;
-      });
+      if (nameInput && displayName) {
+        // Set initial font styling
+        displayName.style.fontSize = "16px";
+        displayName.style.fontFamily = "Rethink Sans";
+        displayName.style.fontWeight = "bold";
+        displayName.style.color = "#000000";
+        displayName.style.textAlign = "center";
 
-      // Set initial value if input already has content
-      if (nameInput.value) {
-        displayName.textContent = nameInput.value;
+        // Listen for input changes
+        nameInput.addEventListener("input", (e) => {
+          displayName.textContent = e.target.value;
+        });
+
+        // Set initial value if input already has content
+        if (nameInput.value) {
+          displayName.textContent = nameInput.value;
+        }
+
+        console.log("Certificate initialization successful");
+        return true;
+      } else {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          console.log(
+            `Certificate elements not found, retrying ${retryCount}/${maxRetries} in ${retryDelay}ms...`
+          );
+          setTimeout(tryInitialize, retryDelay);
+        } else {
+          console.log(
+            "Certificate initialization failed after maximum retries"
+          );
+        }
+        return false;
       }
     }
+
+    // Start the retry process
+    tryInitialize();
   }
 
   // Initialize when DOM is loaded
