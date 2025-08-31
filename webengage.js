@@ -397,15 +397,19 @@ const init = () => {
     window.location.host === "digital-reservation-141130.framer.app"
   ) {
     // Cart Page
-    if (window.location.pathname === "/cart") {
-      const form = document.getElementById("userDetailsForm");
+    if (
+      window.location.pathname === "/cart" ||
+      window.location.pathname === "/new-checkout"
+    ) {
+      const form = document.getElementById("detailsform");
       const formDetails = {};
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        formDetails.name = document.getElementById("name").value.trim();
-        formDetails.whatsapp = document.getElementById("whatsapp").value.trim();
-        formDetails.email = document.getElementById("email").value.trim();
+        const formData = new FormData(form);
+        formDetails.name = formData.get("name").trim();
+        formDetails.whatsapp = formData.get("phone").trim();
+        formDetails.email = formData.get("email").trim();
 
         window.webengage.user.login(formDetails.email.toLowerCase());
         window.webengage.user.setAttribute("we_first_name", formDetails.name);
@@ -420,9 +424,10 @@ const init = () => {
           document.getElementById("testing123")?.firstElementChild
             ?.textContent || "ERROR";
         let priceNumber = parseInt(price1.replace(/[^\d]/g, ""));
-        const course1 = document
-          .getElementById("cartItem")
-          .firstElementChild.getAttribute("data-framer-name");
+        const course1 =
+          document
+            .getElementById("cartItem")
+            .firstElementChild.getAttribute("data-framer-name") || "ERROR";
         const currentUrl2 = new URL(window.location.href);
         currentUrl2.searchParams.set("course", course1);
         const courseResponse = await fetch(
@@ -474,8 +479,6 @@ const startCheckingForBtn4 = () => {
     }
   }, 200); // Check every 200ms
 };
-
-// Start checking for btn4 when DOM is ready
 
 // Initial run
 if (document.readyState === "loading") {
