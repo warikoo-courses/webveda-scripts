@@ -36,7 +36,7 @@
       // Call the form's submit handler directly
       if (userForm.onsubmit) {
         console.log("Calling form submit handler");
-        userForm.onsubmit(e);
+        userForm.requestSubmit();
       }
     });
 
