@@ -22,7 +22,27 @@
     const course_name = getlocalStorageCart();
     const submitBtn = document.querySelector("#submitform");
     const userForm = document.getElementById("detailsform");
+    const phoneInput = document.getElementsByName("phone")[0];
+    let country = "IN";
+    let ip_data = null;
+    try {
+      ip_data = await (
+        await fetch(
+          "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
+        )
+      ).json();
+      country = ip_data.country;
+      if (ip_data.city && ip_data.region && ip_data.country && ip_data.postal) {
+        document.cookie = `city=${ip_data.city}; path=/; max-age=1800`;
+        document.cookie = `region=${ip_data.region}; path=/; max-age=1800`;
+        document.cookie = `country=${ip_data.country}; path=/; max-age=1800`;
+        document.cookie = `postal=${ip_data.postal}; path=/; max-age=1800`;
+      }
+    } catch (err) {}
 
+    if (phoneInput) {
+      phoneInput.value = ip_data.country_calling_code;
+    }
     // Add Event Listener to Submit Button
     submitBtn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -169,23 +189,6 @@
         window.location.search
       )}`;
     }
-
-    let country = "IN";
-    let ip_data = null;
-    try {
-      ip_data = await (
-        await fetch(
-          "https://ipapi.co/json/?key=BCjmIMf1YZiYOTXSDzA0qZfdLRw7BXmTTJ7MWRAI3v578IUzpS"
-        )
-      ).json();
-      country = ip_data.country;
-      if (ip_data.city && ip_data.region && ip_data.country && ip_data.postal) {
-        document.cookie = `city=${ip_data.city}; path=/; max-age=1800`;
-        document.cookie = `region=${ip_data.region}; path=/; max-age=1800`;
-        document.cookie = `country=${ip_data.country}; path=/; max-age=1800`;
-        document.cookie = `postal=${ip_data.postal}; path=/; max-age=1800`;
-      }
-    } catch (err) {}
 
     if (country === "IN") {
       userForm.onsubmit = async (e) => {
