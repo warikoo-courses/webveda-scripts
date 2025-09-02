@@ -56,7 +56,7 @@
       // Wait for elements to be available
       const submitBtn = await waitForElement("#submitform");
       const userForm = await waitForElement("#detailsform");
-      const phoneInput = document.getElementsByName("phone")[0];
+      const phoneInput = document.getElementsByName("countrycode")[0];
       let country = "IN";
       let ip_data = null;
       try {
@@ -81,7 +81,7 @@
 
       if (phoneInput) {
         if (ip_data.country_calling_code) {
-          phoneInput.value = ip_data.country_calling_code;
+          phoneInput.value = ip_data.country_calling_code || "+91";
         }
       }
       // Add Event Listener to Submit Button (In Framer Override)
@@ -237,6 +237,7 @@
           console.log(formData);
           const name = formData.get("name");
           let whatsapp = formData.get("phone").replace(/\s+/g, "");
+          const countrycode = formData.get("countrycode").replace(/\s+/g, "");
           const email = formData.get("email").trim();
           const course_name_reload = getlocalStorageCart();
 
@@ -249,14 +250,7 @@
           }
 
           //Check if IP Data is Present
-          if (ip_data) {
-            //Check if Whatsapp is less than 10 characters add country calling code
-            if (whatsapp.length <= 10) {
-              if (ip_data.country_calling_code) {
-                whatsapp = ip_data.country_calling_code + whatsapp;
-              }
-            }
-          }
+          whatsapp = countrycode + whatsapp;
 
           //Validate Form - Show Errors if any
           if (validateForm(name, whatsapp, email)) {
