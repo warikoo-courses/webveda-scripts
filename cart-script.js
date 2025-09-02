@@ -18,6 +18,9 @@
 
   let isProcessing = false; // Flag to prevent multiple submissions
 
+  // Mount isProcessing to window for access from other scripts
+  window.isProcessing = isProcessing;
+
   // Simple function to wait for elements to be available
   function waitForElement(selector, maxAttempts = 50, interval = 300) {
     return new Promise((resolve, reject) => {
@@ -81,20 +84,7 @@
           phoneInput.value = ip_data.country_calling_code;
         }
       }
-      // Add Event Listener to Submit Button
-      submitBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (isProcessing) {
-          console.log("Payment already in progress, please wait...");
-          return;
-        }
-
-        // Call the form's submit handler directly
-        if (userForm.onsubmit) {
-          console.log("Calling form submit handler");
-          userForm.requestSubmit();
-        }
-      });
+      // Add Event Listener to Submit Button (In Framer Override)
 
       // Elements are now guaranteed to be available
 
@@ -226,6 +216,7 @@
 
           // Set processing flag to prevent multiple submissions
           isProcessing = true;
+          window.isProcessing = true;
           submitBtn.disabled = true;
           submitBtn.style.opacity = "0.5";
 
@@ -234,6 +225,7 @@
             if (isProcessing) {
               console.log("Payment timeout - resetting button state");
               isProcessing = false;
+              window.isProcessing = false;
               submitBtn.disabled = false;
               submitBtn.classList.remove("loading");
               submitBtn.style.opacity = "1";
@@ -251,6 +243,7 @@
           //Check if cart course is loaded
           if (course_name.length < 1) {
             isProcessing = false;
+            window.isProcessing = false;
             submitBtn.style.opacity = "1";
             return;
           }
@@ -277,6 +270,7 @@
             //Check if Payment Array is Present and has 2 elements
             if (!paymentArray || paymentArray.length !== 2) {
               isProcessing = false;
+              window.isProcessing = false;
               submitBtn.disabled = false;
               submitBtn.classList.remove("loading");
               submitBtn.style.opacity = "1";
@@ -306,6 +300,7 @@
               modal: {
                 ondismiss: () => {
                   isProcessing = false;
+                  window.isProcessing = false;
                   submitBtn.disabled = false;
                   submitBtn.classList.remove("loading");
                   submitBtn.style.opacity = "1";
@@ -316,6 +311,7 @@
 
             rzp1.on("payment.failed", (res) => {
               isProcessing = false;
+              window.isProcessing = false;
               submitBtn.disabled = false;
               submitBtn.classList.remove("loading");
               submitBtn.style.opacity = "1";
@@ -328,6 +324,7 @@
             submitBtn.style.opacity = "1";
           } else {
             isProcessing = false;
+            window.isProcessing = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
             submitBtn.style.opacity = "1";
@@ -345,6 +342,7 @@
 
           // Set processing flag to prevent multiple submissions
           isProcessing = true;
+          window.isProcessing = true;
           submitBtn.style.opacity = "0.5";
 
           // Add timeout to prevent button from being stuck
@@ -352,6 +350,7 @@
             if (isProcessing) {
               console.log("Payment timeout - resetting button state");
               isProcessing = false;
+              window.isProcessing = false;
               submitBtn.disabled = false;
               submitBtn.classList.remove("loading");
               submitBtn.style.opacity = "1";
@@ -418,6 +417,7 @@
             submitBtn.style.opacity = "1";
           } else {
             isProcessing = false;
+            window.isProcessing = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
             submitBtn.style.opacity = "1";
