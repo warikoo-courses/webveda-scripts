@@ -191,7 +191,7 @@
         } else {
           document.getElementById("emailerror").textContent = "";
         }
-
+        console.log(name, whatsapp, email, "Are Valid");
         return isValid;
       }
 
