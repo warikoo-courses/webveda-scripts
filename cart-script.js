@@ -27,6 +27,7 @@
         const element = document.querySelector(selector);
 
         if (element) {
+          console.log(`Element ${selector} found after ${attempts} attempts`);
           resolve(element);
         } else if (attempts >= maxAttempts) {
           reject(
@@ -36,6 +37,7 @@
           );
         } else {
           attempts++;
+          console.log(`Element ${selector} not found, retrying...`);
           setTimeout(checkElement, interval);
         }
       };
@@ -75,13 +77,13 @@
       } catch (err) {}
 
       if (phoneInput) {
-        phoneInput.value = ip_data.country_calling_code;
+        if (ip_data.country_calling_code) {
+          phoneInput.value = ip_data.country_calling_code;
+        }
       }
       // Add Event Listener to Submit Button
       submitBtn.addEventListener("click", (e) => {
         e.preventDefault();
-
-        // Prevent multiple rapid clicks
         if (isProcessing) {
           console.log("Payment already in progress, please wait...");
           return;
@@ -257,7 +259,9 @@
           if (ip_data) {
             //Check if Whatsapp is less than 10 characters add country calling code
             if (whatsapp.length <= 10) {
-              whatsapp = ip_data.country_calling_code + whatsapp;
+              if (ip_data.country_calling_code) {
+                whatsapp = ip_data.country_calling_code + whatsapp;
+              }
             }
           }
 
