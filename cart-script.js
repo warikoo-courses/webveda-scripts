@@ -56,7 +56,7 @@
       // Wait for elements to be available
       const submitBtn = await waitForElement("#submitform");
       const userForm = await waitForElement("#detailsform");
-      const phoneInput = document.getElementsByName("phone")[0];
+      let phoneInput = document.getElementsByName("phone")[0];
       let country = "IN";
       let ip_data = null;
       try {
@@ -82,6 +82,7 @@
       if (phoneInput) {
         console.log("Found Phone Input");
         if (ip_data.country_calling_code) {
+          phoneInput = document.getElementsByName("phone")[0];
           phoneInput.value = ip_data.country_calling_code || "+91";
           console.log("Set Phone Input");
         }
