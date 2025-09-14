@@ -56,7 +56,7 @@
       // Wait for elements to be available
       const submitBtn = await waitForElement("#submitform");
       const userForm = await waitForElement("#detailsform");
-      const phoneInput = document.getElementsByName("countrycode")[0];
+      const phoneInput = document.getElementsByName("phone")[0];
       let country = "IN";
       let ip_data = null;
       try {
@@ -259,7 +259,14 @@
           }
 
           //Check if IP Data is Present
-          whatsapp = countrycode + whatsapp;
+          if (ip_data) {
+            //Check if Whatsapp is less than 10 characters add country calling code
+            if (whatsapp.length <= 10) {
+              if (ip_data.country_calling_code) {
+                whatsapp = ip_data.country_calling_code + whatsapp;
+              }
+            }
+          }
 
           //Validate Form - Show Errors if any
           if (validateForm(name, whatsapp, email)) {
