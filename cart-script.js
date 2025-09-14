@@ -246,7 +246,7 @@
           console.log(formData);
           const name = formData.get("name");
           let whatsapp = formData.get("phone").replace(/\s+/g, "");
-          const countrycode = formData.get("countrycode").replace(/\s+/g, "");
+          //const countrycode = formData.get("countrycode").replace(/\s+/g, "");
           const email = formData.get("email").trim();
           const course_name_reload = getlocalStorageCart();
 
