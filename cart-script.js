@@ -163,35 +163,42 @@
       function validateForm(name, whatsapp, email) {
         let isValid = true;
         console.log("Validating Form");
-        if (name.length < 2) {
-          document.getElementById("nameerror")?.textContent =
-            "Name must be at least 2 characters long";
-          document.getElementById("nameerror")?.style.color = "red";
+        const nameerror = document.getElementById("nameerror");
+        const whatsapperror = document.getElementById("whatsapperror");
+        const emailerror = document.getElementById("emailerror");
+        if (name.length < 2 && nameerror) {
+          nameerror.textContent = "Name must be at least 2 characters long";
+          nameerror.style.color = "red";
           console.log("Name must be at least 2 characters long");
           isValid = false;
         } else {
-          document.getElementById("nameerror")?.textContent = "";
+          if (nameerror) {
+            nameerror.textContent = "";
+          }
         }
 
-        if (whatsapp.length < 10) {
-          document.getElementById("whatsapperror")?.textContent =
+        if (whatsapp.length < 10 && whatsapperror) {
+          whatsapperror.textContent =
             "Whatsapp must be at least 10 characters long";
-          document.getElementById("whatsapperror")?.style.color = "red";
+          whatsapperror.style.color = "red";
           console.log("Whatsapp must be at least 10 characters long");
           isValid = false;
         } else {
-          document.getElementById("whatsapperror")?.textContent = "";
+          if (whatsapperror) {
+            whatsapperror.textContent = "";
+          }
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          document.getElementById("emailerror")?.textContent =
-            "Please enter a valid email address";
-          document.getElementById("emailerror")?.style.color = "red";
+        if (!emailRegex.test(email) && emailerror) {
+          emailerror.textContent = "Please enter a valid email address";
+          emailerror.style.color = "red";
           isValid = false;
           console.log("Please enter a valid email address");
         } else {
-          document.getElementById("emailerror")?.textContent = "";
+          if (emailerror) {
+            emailerror.textContent = "";
+          }
         }
         console.log(name, whatsapp, email, "Are Valid");
         return isValid;
