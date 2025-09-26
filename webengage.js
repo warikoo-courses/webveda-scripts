@@ -258,12 +258,12 @@ window.course_data = [
     Source: null,
     Campaign: null,
     Medium: null,
-    Language: ["English", "Hindi"],
+    Language: ["English"],
     Duration: 1,
-    Rating: 1.0,
+    Rating: 4.0,
     Student_Enrolled_Count: 0,
-    No_Of_Modules: 3,
-    Plan_Cost: [199, 299, 399],
+    No_Of_Modules: 7,
+    Plan_Cost: [2499, 3499, 4499],
   },
 ];
 
