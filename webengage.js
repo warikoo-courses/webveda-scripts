@@ -301,53 +301,6 @@ const getCurrentUnixTimestamp = () => {
 
 // Track if event listener has been added to prevent duplicates
 let freeCourseListenerAdded = false;
-let freeCoursePopupListenerAdded = false;
-
-const freeCoursePopup = () => {
-  // Access the iframe
-  const iframe = document.querySelector('iframe[name="survey-frame-7djl41n"]');
-  if (!iframe) return;
-
-  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-  const popup = iframeDoc.getElementById("surveyResponseFormId");
-
-  if (popup && !freeCoursePopupListenerAdded) {
-    freeCoursePopupListenerAdded = true;
-    popup.setAttribute("data-free-course-popup-initialized", "true");
-
-    popup.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const course = getCourseFromURL(window.course_data);
-      const emailInput = iframeDoc.getElementsByName(
-        "surveyQuestionResponseForms[0].questionResponseForm.questionTypeResponseForm.textBoxResponses[0].value"
-      )[0];
-      const email = emailInput ? emailInput.value : null;
-
-      const isValidEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-      };
-
-      if (email && isValidEmail(email) && course) {
-        window.webengage.user.login(email.toLowerCase());
-        window.webengage.user.setAttribute("we_email", email);
-        const response = await fetch(
-          `https://syncsphere-hiv6.onrender.com/api/userCheck/${course.Course_id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: email.toLowerCase(),
-            }),
-          }
-        );
-        console.log("Response is ", await response.json());
-      }
-    });
-  }
-};
 
 const freeCourse = () => {
   const submitButton = document.getElementById("btn4");
@@ -563,17 +516,26 @@ const startCheckingForPopup = () => {
   }, 200);
 };
 
+const webengageSurvey = () => {
+  webengage.survey.onSubmit(function (data) {
+    if (data.surveyId === "7djl41n") {
+      console.log("FREE COURSE POPUP", data);
+    }
+    console.log(data);
+  });
+};
+
 // Initial run
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     init();
     startCheckingForBtn4(); // Start checking for btn4
-    startCheckingForPopup(); // Start checking for popup
+    webengageSurvey();
   });
 } else {
   init();
   startCheckingForBtn4(); // Start checking for btn4
-  startCheckingForPopup(); // Start checking for popup
+  webengageSurvey();
 }
 
 // Monitor URL changes
