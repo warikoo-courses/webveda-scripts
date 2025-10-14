@@ -304,15 +304,21 @@ let freeCourseListenerAdded = false;
 let freeCoursePopupListenerAdded = false;
 
 const freeCoursePopup = () => {
-  const popup = document.getElementById("surveyResponseFormId");
+  // Access the iframe
+  const iframe = document.querySelector('iframe[name="survey-frame-7djl41n"]');
+  if (!iframe) return;
+
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+  const popup = iframeDoc.getElementById("surveyResponseFormId");
+
   if (popup && !freeCoursePopupListenerAdded) {
     freeCoursePopupListenerAdded = true;
     popup.setAttribute("data-free-course-popup-initialized", "true");
 
     popup.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const course = getCourseFromURL(window.course_data) || "wvcourse-012";
-      const emailInput = document.getElementsByName(
+      const course = getCourseFromURL(window.course_data);
+      const emailInput = iframeDoc.getElementsByName(
         "surveyQuestionResponseForms[0].questionResponseForm.questionTypeResponseForm.textBoxResponses[0].value"
       )[0];
       const email = emailInput ? emailInput.value : null;
@@ -322,10 +328,9 @@ const freeCoursePopup = () => {
         return emailRegex.test(email);
       };
 
-      console.log("Email is " + email);
-      console.log("Course is " + course);
       if (email && isValidEmail(email) && course) {
-        console.log("Email is valid" + email);
+        window.webengage.user.login(email.toLowerCase());
+        window.webengage.user.setAttribute("we_email", email);
         const response = await fetch(
           `https://syncsphere-hiv6.onrender.com/api/userCheck/${course.Course_id}`,
           {
@@ -433,7 +438,14 @@ const resetFreeCourseListener = () => {
 };
 
 const resetFreeCoursePopupListener = () => {
-  const existingPopup = document.querySelector(
+  const iframe = document.querySelector('iframe[name="survey-frame-7djl41n"]');
+  if (!iframe) {
+    freeCoursePopupListenerAdded = false;
+    return;
+  }
+
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+  const existingPopup = iframeDoc.querySelector(
     '[data-free-course-popup-initialized="true"]'
   );
   if (!existingPopup) {
@@ -533,17 +545,20 @@ const startCheckingForBtn4 = () => {
 };
 
 const startCheckingForPopup = () => {
-  console.log("Checking for popup");
   popupCheckInterval = setInterval(() => {
-    const popup = document.getElementById("surveyResponseFormId");
-    if (popup) {
-      console.log("Popup found");
-      clearInterval(popupCheckInterval);
-      popupCheckInterval = null;
-      resetFreeCoursePopupListener();
-      freeCoursePopup();
-    } else {
-      console.log("Popup not found");
+    const iframe = document.querySelector(
+      'iframe[name="survey-frame-7djl41n"]'
+    );
+    if (iframe) {
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      const popup = iframeDoc.getElementById("surveyResponseFormId");
+
+      if (popup) {
+        clearInterval(popupCheckInterval);
+        popupCheckInterval = null;
+        resetFreeCoursePopupListener();
+        freeCoursePopup();
+      }
     }
   }, 200);
 };
