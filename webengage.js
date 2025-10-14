@@ -390,22 +390,6 @@ const resetFreeCourseListener = () => {
   }
 };
 
-const resetFreeCoursePopupListener = () => {
-  const iframe = document.querySelector('iframe[name="survey-frame-7djl41n"]');
-  if (!iframe) {
-    freeCoursePopupListenerAdded = false;
-    return;
-  }
-
-  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-  const existingPopup = iframeDoc.querySelector(
-    '[data-free-course-popup-initialized="true"]'
-  );
-  if (!existingPopup) {
-    freeCoursePopupListenerAdded = false;
-  }
-};
-
 const init = () => {
   if (
     window.location.host === "www.webveda.com" ||
@@ -477,7 +461,6 @@ const init = () => {
 
 // Set up interval to check for btn4 button
 let btn4CheckInterval = null;
-let popupCheckInterval = null;
 
 const startCheckingForBtn4 = () => {
   btn4CheckInterval = setInterval(() => {
@@ -497,31 +480,39 @@ const startCheckingForBtn4 = () => {
   }, 200); // Check every 200ms
 };
 
-const startCheckingForPopup = () => {
-  popupCheckInterval = setInterval(() => {
-    const iframe = document.querySelector(
-      'iframe[name="survey-frame-7djl41n"]'
-    );
-    if (iframe) {
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-      const popup = iframeDoc.getElementById("surveyResponseFormId");
+const webengageSurvey = () => {
+  webengage.survey.onSubmit(async function (data) {
+    if (data.surveyId === "7djl41n") {
+      const course = getCourseFromURL(window.course_data) || "wvcourse-012";
+      let email =
+        data.questionResponses[0].value.values[
+          "Email address (for access link)"
+        ];
 
-      if (popup) {
-        clearInterval(popupCheckInterval);
-        popupCheckInterval = null;
-        resetFreeCoursePopupListener();
-        freeCoursePopup();
+      const isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      };
+
+      console.log(email, course);
+      if (email && isValidEmail(email) && course) {
+        // window.webengage.user.login(email.toLowerCase());
+        // window.webengage.user.setAttribute("we_email", email);
+        const response = await fetch(
+          `https://syncsphere-hiv6.onrender.com/api/userCheck/${course.Course_id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email.toLowerCase(),
+            }),
+          }
+        );
+        console.log("Response is ", await response.json());
       }
     }
-  }, 200);
-};
-
-const webengageSurvey = () => {
-  webengage.survey.onSubmit(function (data) {
-    if (data.surveyId === "7djl41n") {
-      console.log("FREE COURSE POPUP", data);
-    }
-    console.log(data);
   });
 };
 
