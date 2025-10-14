@@ -494,7 +494,7 @@ const webengageSurvey = () => {
         return emailRegex.test(email);
       };
 
-      console.log(email, course);
+      console.log(email, course, window.location.href);
       if (email && isValidEmail(email) && course) {
         // window.webengage.user.login(email.toLowerCase());
         // window.webengage.user.setAttribute("we_email", email);
