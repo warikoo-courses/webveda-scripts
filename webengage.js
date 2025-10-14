@@ -533,6 +533,7 @@ const startCheckingForBtn4 = () => {
 };
 
 const startCheckingForPopup = () => {
+  console.log("Checking for popup");
   popupCheckInterval = setInterval(() => {
     const popup = document.getElementById("surveyResponseFormId");
     if (popup) {
@@ -541,6 +542,8 @@ const startCheckingForPopup = () => {
       popupCheckInterval = null;
       resetFreeCoursePopupListener();
       freeCoursePopup();
+    } else {
+      console.log("Popup not found");
     }
   }, 200);
 };
