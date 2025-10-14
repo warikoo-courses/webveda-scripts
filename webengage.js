@@ -301,6 +301,48 @@ const getCurrentUnixTimestamp = () => {
 
 // Track if event listener has been added to prevent duplicates
 let freeCourseListenerAdded = false;
+let freeCoursePopupListenerAdded = false;
+
+const freeCoursePopup = () => {
+  const popup = document.getElementById("surveyResponseFormId");
+  if (popup && !freeCoursePopupListenerAdded) {
+    freeCoursePopupListenerAdded = true;
+    popup.setAttribute("data-free-course-popup-initialized", "true");
+
+    popup.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const course = getCourseFromURL(window.course_data) || "wvcourse-012";
+      const emailInput = document.getElementsByName(
+        "surveyQuestionResponseForms[0].questionResponseForm.questionTypeResponseForm.textBoxResponses[0].value"
+      )[0];
+      const email = emailInput ? emailInput.value : null;
+
+      const isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      };
+
+      console.log("Email is " + email);
+      console.log("Course is " + course);
+      if (email && isValidEmail(email) && course) {
+        console.log("Email is valid" + email);
+        const response = await fetch(
+          `https://syncsphere-hiv6.onrender.com/api/userCheck/${course.Course_id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email.toLowerCase(),
+            }),
+          }
+        );
+        console.log("Response is ", await response.json());
+      }
+    });
+  }
+};
 
 const freeCourse = () => {
   const submitButton = document.getElementById("btn4");
@@ -390,6 +432,15 @@ const resetFreeCourseListener = () => {
   }
 };
 
+const resetFreeCoursePopupListener = () => {
+  const existingPopup = document.querySelector(
+    '[data-free-course-popup-initialized="true"]'
+  );
+  if (!existingPopup) {
+    freeCoursePopupListenerAdded = false;
+  }
+};
+
 const init = () => {
   if (
     window.location.host === "www.webveda.com" ||
@@ -461,6 +512,7 @@ const init = () => {
 
 // Set up interval to check for btn4 button
 let btn4CheckInterval = null;
+let popupCheckInterval = null;
 
 const startCheckingForBtn4 = () => {
   btn4CheckInterval = setInterval(() => {
@@ -480,15 +532,30 @@ const startCheckingForBtn4 = () => {
   }, 200); // Check every 200ms
 };
 
+const startCheckingForPopup = () => {
+  popupCheckInterval = setInterval(() => {
+    const popup = document.getElementById("surveyResponseFormId");
+    if (popup) {
+      console.log("Popup found");
+      clearInterval(popupCheckInterval);
+      popupCheckInterval = null;
+      resetFreeCoursePopupListener();
+      freeCoursePopup();
+    }
+  }, 200);
+};
+
 // Initial run
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     init();
     startCheckingForBtn4(); // Start checking for btn4
+    startCheckingForPopup(); // Start checking for popup
   });
 } else {
   init();
   startCheckingForBtn4(); // Start checking for btn4
+  startCheckingForPopup(); // Start checking for popup
 }
 
 // Monitor URL changes
