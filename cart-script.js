@@ -416,21 +416,43 @@
 
             // Style the checkout container to cover the whole screen
             const checkoutElement = document.getElementById("checkout");
-            checkoutElement.style.display = "block";
+            checkoutElement.style.display = "flex";
+            checkoutElement.style.alignItems = "center";
+            checkoutElement.style.justifyContent = "center";
             checkoutElement.style.position = "fixed";
             checkoutElement.style.top = "0";
             checkoutElement.style.left = "0";
-            checkoutElement.style.width = "100%";
-            checkoutElement.style.height = "100%";
+            checkoutElement.style.width = "100vw";
+            checkoutElement.style.height = "100vh";
             checkoutElement.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
             checkoutElement.style.zIndex = "9999";
             checkoutElement.style.overflow = "auto";
-            checkoutElement.style.padding = "20px";
+            checkoutElement.style.padding = "0";
+            checkoutElement.style.margin = "0";
             checkoutElement.style.boxSizing = "border-box";
+
+            // Wait for iframe to be created and style it
+            const styleStripeIframe = () => {
+              const stripeIframe = checkoutElement.querySelector("iframe");
+              if (stripeIframe) {
+                stripeIframe.style.width = "100%";
+                stripeIframe.style.height = "100%";
+                stripeIframe.style.border = "none";
+                stripeIframe.style.position = "absolute";
+                stripeIframe.style.top = "0";
+                stripeIframe.style.left = "0";
+                stripeIframe.style.right = "0";
+                stripeIframe.style.bottom = "0";
+              } else {
+                // Retry if iframe not found yet
+                setTimeout(styleStripeIframe, 100);
+              }
+            };
+            styleStripeIframe();
 
             // Style the close button to be fixed at the top right
             const closeButton = document.getElementById("closestripe");
-            closeButton.style.display = "block";
+            closeButton.style.display = "flex";
             closeButton.style.position = "fixed";
             closeButton.style.top = "20px";
             closeButton.style.right = "20px";
@@ -445,10 +467,21 @@
             closeButton.style.fontWeight = "bold";
             closeButton.style.color = "#333";
             closeButton.style.boxShadow = "0 2px 10px rgba(0,0,0,0.3)";
-            closeButton.style.display = "flex";
             closeButton.style.alignItems = "center";
             closeButton.style.justifyContent = "center";
+            closeButton.style.transition =
+              "transform 0.2s, background-color 0.2s";
             closeButton.innerHTML = "✕";
+
+            // Add hover effect for close button
+            closeButton.addEventListener("mouseenter", () => {
+              closeButton.style.backgroundColor = "#f0f0f0";
+              closeButton.style.transform = "scale(1.1)";
+            });
+            closeButton.addEventListener("mouseleave", () => {
+              closeButton.style.backgroundColor = "#fff";
+              closeButton.style.transform = "scale(1)";
+            });
 
             closeButton.addEventListener("click", () => {
               checkoutElement.style.display = "none";
