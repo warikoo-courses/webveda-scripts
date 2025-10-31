@@ -413,15 +413,48 @@
                 fetchClientSecret: () => clientSecret,
               })
             ).mount("#checkout");
-            document.getElementById("checkout").style.display = "block";
-            document.getElementById("closestripe").style.display = "block";
-            document
-              .getElementById("closestripe")
-              .addEventListener("click", () => {
-                document.getElementById("checkout").style.display = "none";
-                document.getElementById("closestripe").style.display = "none";
-                window.location.reload();
-              });
+
+            // Style the checkout container to cover the whole screen
+            const checkoutElement = document.getElementById("checkout");
+            checkoutElement.style.display = "block";
+            checkoutElement.style.position = "fixed";
+            checkoutElement.style.top = "0";
+            checkoutElement.style.left = "0";
+            checkoutElement.style.width = "100%";
+            checkoutElement.style.height = "100%";
+            checkoutElement.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+            checkoutElement.style.zIndex = "9999";
+            checkoutElement.style.overflow = "auto";
+            checkoutElement.style.padding = "20px";
+            checkoutElement.style.boxSizing = "border-box";
+
+            // Style the close button to be fixed at the top right
+            const closeButton = document.getElementById("closestripe");
+            closeButton.style.display = "block";
+            closeButton.style.position = "fixed";
+            closeButton.style.top = "20px";
+            closeButton.style.right = "20px";
+            closeButton.style.zIndex = "10000";
+            closeButton.style.width = "40px";
+            closeButton.style.height = "40px";
+            closeButton.style.backgroundColor = "#fff";
+            closeButton.style.border = "none";
+            closeButton.style.borderRadius = "50%";
+            closeButton.style.cursor = "pointer";
+            closeButton.style.fontSize = "24px";
+            closeButton.style.fontWeight = "bold";
+            closeButton.style.color = "#333";
+            closeButton.style.boxShadow = "0 2px 10px rgba(0,0,0,0.3)";
+            closeButton.style.display = "flex";
+            closeButton.style.alignItems = "center";
+            closeButton.style.justifyContent = "center";
+            closeButton.innerHTML = "✕";
+
+            closeButton.addEventListener("click", () => {
+              checkoutElement.style.display = "none";
+              closeButton.style.display = "none";
+              window.location.reload();
+            });
             // Note: isProcessing remains true until checkout is closed or page is reloaded
             submitBtn.disabled = false;
             submitBtn.classList.remove("loading");
