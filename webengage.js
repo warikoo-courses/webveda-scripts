@@ -439,6 +439,7 @@ const init = () => {
           Purchase_Link: currentUrl2.toString(),
           Plan_Name: course1.split("_")[1],
           Plan_Cost: priceNumber,
+          Plan_Costv2: priceNumber,
           Source: fetchParams("source"),
           Medium: fetchParams("medium"),
           Campaign: fetchParams("campaign"),
