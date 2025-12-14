@@ -161,6 +161,116 @@
         }
       }
 
+      // Function to sanitize and fix common email typos
+      function sanitizeEmail(email) {
+        if (!email || typeof email !== "string") return email;
+
+        let sanitized = email.trim().toLowerCase();
+
+        // Fix common domain typos
+        const domainFixes = {
+          gamil: "gmail",
+          gmial: "gmail",
+          gmai: "gmail",
+          gmaill: "gmail",
+          gmaiil: "gmail",
+          gmaiil: "gmail",
+          gmial: "gmail",
+          yaho: "yahoo",
+          yhoo: "yahoo",
+          yaoo: "yahoo",
+          outlok: "outlook",
+          outllok: "outlook",
+          hotmial: "hotmail",
+          hotmai: "hotmail",
+          hotmali: "hotmail",
+        };
+
+        // Split email into local and domain parts
+        const parts = sanitized.split("@");
+        if (parts.length === 2) {
+          let [localPart, domain] = parts;
+
+          // Fix domain typos
+          for (const [typo, correct] of Object.entries(domainFixes)) {
+            if (domain.includes(typo)) {
+              domain = domain.replace(typo, correct);
+            }
+          }
+
+          // Fix common TLD typos
+          domain = domain.replace(/\.con$/i, ".com");
+          domain = domain.replace(/\.co$/i, ".com");
+          domain = domain.replace(/\.cmo$/i, ".com");
+          domain = domain.replace(/\.ocm$/i, ".com");
+          domain = domain.replace(/\.cm$/i, ".com");
+          domain = domain.replace(/\.om$/i, ".com");
+          domain = domain.replace(/\.cpm$/i, ".com");
+          domain = domain.replace(/\.coom$/i, ".com");
+          domain = domain.replace(/\.comm$/i, ".com");
+          domain = domain.replace(/\.co\.co$/i, ".com");
+          domain = domain.replace(/\.co\.com$/i, ".com");
+
+          // Fix .org typos
+          domain = domain.replace(/\.or$/i, ".org");
+          domain = domain.replace(/\.ogr$/i, ".org");
+          domain = domain.replace(/\.og$/i, ".org");
+
+          // Fix .net typos
+          domain = domain.replace(/\.ent$/i, ".net");
+          domain = domain.replace(/\.nett$/i, ".net");
+
+          // Fix .in typos
+          domain = domain.replace(/\.ni$/i, ".in");
+          domain = domain.replace(/\.im$/i, ".in");
+
+          sanitized = `${localPart}@${domain}`;
+        }
+
+        return sanitized;
+      }
+
+      // Enhanced email validation with hygiene checks
+      function validateEmail(email) {
+        if (!email || typeof email !== "string") return false;
+
+        const trimmedEmail = email.trim();
+        if (trimmedEmail.length === 0) return false;
+
+        // Basic email regex (RFC 5322 simplified)
+        const emailRegex =
+          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+        if (!emailRegex.test(trimmedEmail)) return false;
+
+        // Additional hygiene checks
+        const parts = trimmedEmail.split("@");
+        if (parts.length !== 2) return false;
+
+        const [localPart, domain] = parts;
+
+        // Local part checks
+        if (localPart.length === 0 || localPart.length > 64) return false;
+        if (localPart.startsWith(".") || localPart.endsWith(".")) return false;
+        if (localPart.includes("..")) return false;
+
+        // Domain checks
+        if (domain.length === 0 || domain.length > 255) return false;
+        if (domain.startsWith(".") || domain.endsWith(".")) return false;
+        if (domain.includes("..")) return false;
+
+        // Check for valid TLD (at least 2 characters after last dot)
+        const domainParts = domain.split(".");
+        if (domainParts.length < 2) return false;
+        const tld = domainParts[domainParts.length - 1];
+        if (tld.length < 2 || tld.length > 63) return false;
+
+        // Check for consecutive dots
+        if (domain.includes("..")) return false;
+
+        return true;
+      }
+
       function validateForm(name, whatsapp, email) {
         let isValid = true;
         console.log("Validating Form");
@@ -190,8 +300,24 @@
           }
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email) && emailerror) {
+        // Sanitize email first
+        const sanitizedEmail = sanitizeEmail(email);
+        const originalEmail = email.trim();
+
+        // Check if email was corrected
+        if (sanitizedEmail !== originalEmail.toLowerCase()) {
+          console.log(
+            `Email corrected: "${originalEmail}" -> "${sanitizedEmail}"`
+          );
+          // Update the email input field with corrected value
+          const emailInput = document.getElementsByName("email")[0];
+          if (emailInput) {
+            emailInput.value = sanitizedEmail;
+          }
+        }
+
+        // Validate sanitized email
+        if (!validateEmail(sanitizedEmail) && emailerror) {
           emailerror.textContent = "Please enter a valid email address";
           emailerror.style.color = "red";
           isValid = false;
@@ -201,8 +327,8 @@
             emailerror.textContent = "";
           }
         }
-        console.log(name, whatsapp, email, "Are Valid");
-        return isValid;
+        console.log(name, whatsapp, sanitizedEmail, "Are Valid");
+        return { isValid, sanitizedEmail };
       }
 
       function redirectCourse(course_array, amount, name, email, phone) {
@@ -270,7 +396,9 @@
           }
 
           //Validate Form - Show Errors if any
-          if (validateForm(name, whatsapp, email)) {
+          const validationResult = validateForm(name, whatsapp, email);
+          if (validationResult.isValid) {
+            const sanitizedEmail = validationResult.sanitizedEmail;
             //Generate Payment Array
             const paymentArray = await generatePayment(
               course_name_reload,
@@ -296,7 +424,7 @@
               description: "Course Transaction",
               order_id: paymentArray[0],
               prefill: {
-                email: email,
+                email: sanitizedEmail,
                 contact: whatsapp,
               },
               handler: () => {
@@ -304,7 +432,7 @@
                   course_name,
                   paymentArray[1],
                   name,
-                  email,
+                  sanitizedEmail,
                   whatsapp
                 );
               },
@@ -377,7 +505,9 @@
           const course_name_reload = getlocalStorageCart();
 
           //Validate Form - Show Errors if any
-          if (validateForm(name, whatsapp, email)) {
+          const validationResult = validateForm(name, whatsapp, email);
+          if (validationResult.isValid) {
+            const sanitizedEmail = validationResult.sanitizedEmail;
             const url = new URL(window.location.href);
             const timestamp = document.cookie
               .split("; ")
@@ -385,7 +515,7 @@
               ?.split("=")[1];
             const body_stripe = JSON.stringify({
               name: name,
-              email: email,
+              email: sanitizedEmail,
               phone: whatsapp,
               course_array: course_name_reload,
               utmSource: url.searchParams.get("utm_source"),
