@@ -8,9 +8,11 @@
     return uniqueCart;
   }
 
-  // Check if cart contains free courses
+  // Check if cart contains free courses (case-insensitive)
   function hasFreeCourses(course_array) {
-    return course_array.some((course) => course.includes("_FREE"));
+    return course_array.some((course) =>
+      course.toUpperCase().includes("_FREE")
+    );
   }
 
   // Only load payment scripts if cart doesn't contain free courses
@@ -108,9 +110,9 @@
       // Handle free course enrollment
       async function enrollFreeCourse(course_name_array, name, email, phone) {
         try {
-          // Get first free course (assuming single free course enrollment)
+          // Get first free course (case-insensitive)
           const freeCourse = course_name_array.find((course) =>
-            course.includes("_FREE")
+            course.toUpperCase().includes("_FREE")
           );
 
           if (!freeCourse) {
