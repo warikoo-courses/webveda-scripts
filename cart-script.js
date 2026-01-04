@@ -91,6 +91,53 @@
 
       // Elements are now guaranteed to be available
 
+      // Check if cart contains free courses
+      function hasFreeCourses(course_array) {
+        return course_array.some((course) => course.includes("_FREE"));
+      }
+
+      // Handle free course enrollment
+      async function enrollFreeCourse(course_name_array, name, email, phone) {
+        try {
+          // Get first free course (assuming single free course enrollment)
+          const freeCourse = course_name_array.find((course) =>
+            course.includes("_FREE")
+          );
+
+          if (!freeCourse) {
+            console.error("No free course found in cart");
+            return null;
+          }
+
+          console.log(`Enrolling in free course: ${freeCourse}`);
+
+          const response = await fetch(
+            `https://webveda-checkout.onrender.com/api/free-course/${freeCourse}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: name,
+                email: email,
+                phone: phone,
+                course: freeCourse,
+              }),
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            return data.redirectUrl || null;
+          } else {
+            console.error("Free course enrollment failed:", response.status);
+            return null;
+          }
+        } catch (error) {
+          console.error("Error enrolling in free course:", error);
+          return null;
+        }
+      }
+
       async function generatePayment(course_name_array, name, ip_data) {
         try {
           async function getIPAddress() {
@@ -399,6 +446,31 @@
           const validationResult = validateForm(name, whatsapp, email);
           if (validationResult.isValid) {
             const sanitizedEmail = validationResult.sanitizedEmail;
+
+            // Check if cart contains free courses
+            if (hasFreeCourses(course_name_reload)) {
+              console.log("Free course detected, enrolling...");
+              const redirectUrl = await enrollFreeCourse(
+                course_name_reload,
+                name,
+                sanitizedEmail,
+                whatsapp
+              );
+
+              if (redirectUrl) {
+                console.log(`Redirecting to: ${redirectUrl}`);
+                window.location.href = redirectUrl;
+              } else {
+                isProcessing = false;
+                window.isProcessing = false;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("loading");
+                submitBtn.style.opacity = "1";
+                alert("Free course enrollment failed. Please try again.");
+              }
+              return;
+            }
+
             //Generate Payment Array
             const paymentArray = await generatePayment(
               course_name_reload,
@@ -508,6 +580,31 @@
           const validationResult = validateForm(name, whatsapp, email);
           if (validationResult.isValid) {
             const sanitizedEmail = validationResult.sanitizedEmail;
+
+            // Check if cart contains free courses
+            if (hasFreeCourses(course_name_reload)) {
+              console.log("Free course detected, enrolling...");
+              const redirectUrl = await enrollFreeCourse(
+                course_name_reload,
+                name,
+                sanitizedEmail,
+                whatsapp
+              );
+
+              if (redirectUrl) {
+                console.log(`Redirecting to: ${redirectUrl}`);
+                window.location.href = redirectUrl;
+              } else {
+                isProcessing = false;
+                window.isProcessing = false;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("loading");
+                submitBtn.style.opacity = "1";
+                alert("Free course enrollment failed. Please try again.");
+              }
+              return;
+            }
+
             const url = new URL(window.location.href);
             const timestamp = document.cookie
               .split("; ")
