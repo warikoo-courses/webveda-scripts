@@ -123,7 +123,7 @@
           console.log(`Enrolling in free course: ${freeCourse}`);
 
           const response = await fetch(
-            `https://webveda-checkout.onrender.com/api/free-course/${freeCourse}`,
+            `https://webveda-be.onrender.com/api/free-course/${freeCourse}`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
