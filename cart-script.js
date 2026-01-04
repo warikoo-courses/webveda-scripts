@@ -1,12 +1,4 @@
 (function () {
-  const razorpayScript = document.createElement("script");
-  razorpayScript.src = "https://checkout.razorpay.com/v1/checkout.js";
-  document.head.appendChild(razorpayScript);
-
-  const stripeScript = document.createElement("script");
-  stripeScript.src = "https://js.stripe.com/v3/";
-  document.head.appendChild(stripeScript);
-
   function getlocalStorageCart() {
     const cart = localStorage.getItem("cartItems");
     if (!cart) return [];
@@ -14,6 +6,28 @@
     const uniqueCart = [...new Set(parsedCart)];
     console.log(uniqueCart);
     return uniqueCart;
+  }
+
+  // Check if cart contains free courses
+  function hasFreeCourses(course_array) {
+    return course_array.some((course) => course.includes("_FREE"));
+  }
+
+  // Only load payment scripts if cart doesn't contain free courses
+  const cartItems = getlocalStorageCart();
+  const isFreeCourseOnly = cartItems.length > 0 && hasFreeCourses(cartItems);
+
+  if (!isFreeCourseOnly) {
+    console.log("Loading payment scripts for paid courses");
+    const razorpayScript = document.createElement("script");
+    razorpayScript.src = "https://checkout.razorpay.com/v1/checkout.js";
+    document.head.appendChild(razorpayScript);
+
+    const stripeScript = document.createElement("script");
+    stripeScript.src = "https://js.stripe.com/v3/";
+    document.head.appendChild(stripeScript);
+  } else {
+    console.log("Free course detected - skipping payment script loading");
   }
 
   let isProcessing = false; // Flag to prevent multiple submissions
@@ -90,11 +104,6 @@
       // Add Event Listener to Submit Button (In Framer Override)
 
       // Elements are now guaranteed to be available
-
-      // Check if cart contains free courses
-      function hasFreeCourses(course_array) {
-        return course_array.some((course) => course.includes("_FREE"));
-      }
 
       // Handle free course enrollment
       async function enrollFreeCourse(course_name_array, name, email, phone) {
@@ -432,6 +441,11 @@
             return;
           }
 
+          // Check for free courses EARLY - before any payment processing
+          console.log("Cart contents:", course_name_reload);
+          const isFreeEnrollment = hasFreeCourses(course_name_reload);
+          console.log("Is free enrollment:", isFreeEnrollment);
+
           //Check if IP Data is Present
           if (ip_data) {
             //Check if Whatsapp is less than 10 characters add country calling code
@@ -447,8 +461,8 @@
           if (validationResult.isValid) {
             const sanitizedEmail = validationResult.sanitizedEmail;
 
-            // Check if cart contains free courses
-            if (hasFreeCourses(course_name_reload)) {
+            // Handle free course enrollment - SKIP ALL PAYMENT LOGIC
+            if (isFreeEnrollment) {
               console.log("Free course detected, enrolling...");
               const redirectUrl = await enrollFreeCourse(
                 course_name_reload,
@@ -471,7 +485,8 @@
               return;
             }
 
-            //Generate Payment Array
+            //Generate Payment Array (ONLY for paid courses)
+            console.log("Generating payment for paid courses...");
             const paymentArray = await generatePayment(
               course_name_reload,
               name,
@@ -576,13 +591,18 @@
           const email = formData.get("email").trim();
           const course_name_reload = getlocalStorageCart();
 
+          // Check for free courses EARLY - before any payment processing
+          console.log("Cart contents:", course_name_reload);
+          const isFreeEnrollment = hasFreeCourses(course_name_reload);
+          console.log("Is free enrollment:", isFreeEnrollment);
+
           //Validate Form - Show Errors if any
           const validationResult = validateForm(name, whatsapp, email);
           if (validationResult.isValid) {
             const sanitizedEmail = validationResult.sanitizedEmail;
 
-            // Check if cart contains free courses
-            if (hasFreeCourses(course_name_reload)) {
+            // Handle free course enrollment - SKIP ALL PAYMENT LOGIC
+            if (isFreeEnrollment) {
               console.log("Free course detected, enrolling...");
               const redirectUrl = await enrollFreeCourse(
                 course_name_reload,
@@ -605,6 +625,8 @@
               return;
             }
 
+            // Generate Stripe payment (ONLY for paid courses)
+            console.log("Generating Stripe payment for paid courses...");
             const url = new URL(window.location.href);
             const timestamp = document.cookie
               .split("; ")
