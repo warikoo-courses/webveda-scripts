@@ -3,23 +3,32 @@
 (function () {
   // Create a callable proxy that also supports property access
   const createMockProxy = () => {
-    // Create a function that can be called
-    const mockFunction = function () {
-      return createMockProxy();
-    };
-
-    // Wrap the function in a Proxy to handle property access
-    return new Proxy(mockFunction, {
+    // Create a handler that intercepts all operations
+    const handler = {
       get: function (target, prop) {
         // Return specific values for known properties
         if (prop === "__v") return "6.0";
         if (prop === "__queue") return [];
 
+        // Handle special JavaScript symbols
+        if (typeof prop === "symbol") return undefined;
+
         // For any other property access, return another mock proxy
-        // This allows infinite nesting like webengage.survey.onSubmit
+        // This allows infinite nesting like webengage.user.login
         return createMockProxy();
       },
-    });
+      apply: function (target, thisArg, argumentsList) {
+        // When called as a function, return another mock proxy
+        return createMockProxy();
+      },
+    };
+
+    // Create a function that can be called and wrap it in a Proxy
+    const mockFunction = function () {
+      return createMockProxy();
+    };
+
+    return new Proxy(mockFunction, handler);
   };
 
   // Set the mock webengage object
