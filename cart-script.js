@@ -202,6 +202,9 @@
             ipAddress: ipAddress || "",
             userAgent: userAgent || "",
             ip_data: ip_data || "",
+            upgraded: url.searchParams.get("upgraded"),
+            from: url.searchParams.get("from"),
+            to: url.searchParams.get("to"),
           });
           console.log(body_rzp);
           const response = await fetch(
@@ -646,6 +649,9 @@
               utmTerm: url.searchParams.get("utm_term"),
               eventId: timestamp || "",
               ip_data: ip_data || "",
+              upgraded: url.searchParams.get("upgraded"),
+              from: url.searchParams.get("from"),
+              to: url.searchParams.get("to"),
             });
             const response = await fetch(
               `https://webveda-checkout.onrender.com/api/v1/stripepayment/`,

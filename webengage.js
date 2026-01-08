@@ -1,25 +1,25 @@
 //WebEngage -- Mock Implementation (No Data Sent)
 // Create a dynamic mock WebEngage object using Proxies
 (function () {
-  // Create a recursive proxy that handles any property/method access
+  // Create a callable proxy that also supports property access
   const createMockProxy = () => {
-    return new Proxy(
-      {},
-      {
-        get: function (target, prop) {
-          // Return specific values for known properties
-          if (prop === "__v") return "6.0";
-          if (prop === "__queue") return [];
+    // Create a function that can be called
+    const mockFunction = function () {
+      return createMockProxy();
+    };
 
-          // For any other property access, return a function that:
-          // 1. Does nothing (no-op)
-          // 2. Returns the proxy itself for chaining
-          return function () {
-            return createMockProxy();
-          };
-        },
-      }
-    );
+    // Wrap the function in a Proxy to handle property access
+    return new Proxy(mockFunction, {
+      get: function (target, prop) {
+        // Return specific values for known properties
+        if (prop === "__v") return "6.0";
+        if (prop === "__queue") return [];
+
+        // For any other property access, return another mock proxy
+        // This allows infinite nesting like webengage.survey.onSubmit
+        return createMockProxy();
+      },
+    });
   };
 
   // Set the mock webengage object
