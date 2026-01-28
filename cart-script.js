@@ -188,15 +188,21 @@
             ?.split("=")[1];
           const ipAddress = await getIPAddress();
           const userAgent = navigator.userAgent;
+
+          // Extract ALL URL parameters dynamically
+          const utmParams = {};
+          url.searchParams.forEach((value, key) => {
+            utmParams[key] = value;
+          });
+          // Add eventId to utmParams
+          if (timestamp) {
+            utmParams.eventId = timestamp;
+          }
+
           const body_rzp = JSON.stringify({
             name: name,
             course: course_name_array,
-            utmSource: url.searchParams.get("utm_source"),
-            utmMedium: url.searchParams.get("utm_medium"),
-            utmCampaign: url.searchParams.get("utm_campaign"),
-            utmContent: url.searchParams.get("utm_content"),
-            utmTerm: url.searchParams.get("utm_term"),
-            eventId: timestamp || "",
+            utmParams: utmParams,
             fbc: fbc || "",
             fbp: fbp || "",
             ipAddress: ipAddress || "",
@@ -637,17 +643,23 @@
               .split("; ")
               .find((row) => row.startsWith("timestamp="))
               ?.split("=")[1];
+
+            // Extract ALL URL parameters dynamically
+            const utmParams = {};
+            url.searchParams.forEach((value, key) => {
+              utmParams[key] = value;
+            });
+            // Add event_id to utmParams
+            if (timestamp) {
+              utmParams.event_id = timestamp;
+            }
+
             const body_stripe = JSON.stringify({
               name: name,
               email: sanitizedEmail,
               phone: whatsapp,
               course_array: course_name_reload,
-              utmSource: url.searchParams.get("utm_source"),
-              utmMedium: url.searchParams.get("utm_medium"),
-              utmCampaign: url.searchParams.get("utm_campaign"),
-              utmContent: url.searchParams.get("utm_content"),
-              utmTerm: url.searchParams.get("utm_term"),
-              eventId: timestamp || "",
+              utmParams: utmParams,
               ip_data: ip_data || "",
               upgraded: url.searchParams.get("upgraded"),
               from: url.searchParams.get("from"),
