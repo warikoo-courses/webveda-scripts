@@ -398,7 +398,14 @@
         return { isValid, sanitizedEmail };
       }
 
-      function redirectCourse(course_array, amount, name, email, phone) {
+      function redirectCourse(
+        course_array,
+        amount,
+        name,
+        email,
+        phone,
+        payment_id
+      ) {
         const link = "final-thankyou";
 
         const sanitizedName = name.trim().replace(/\s+/g, "");
@@ -408,7 +415,7 @@
         const course_str = course_array.join("-");
         window.location.href = `/${link}?amount=${
           amount / 100
-        }&course=${course_str}&name=${sanitizedName}&email=${sanitizedEmail}&phone_number=${sanitizedPhone}&currency=INR&${new URLSearchParams(
+        }&course=${course_str}&paymentId=${payment_id}&name=${sanitizedName}&email=${sanitizedEmail}&phone_number=${sanitizedPhone}&currency=INR&${new URLSearchParams(
           window.location.search
         )}`;
       }
@@ -525,13 +532,15 @@
                 email: sanitizedEmail,
                 contact: whatsapp,
               },
-              handler: () => {
+              handler: (response) => {
+                console.log(response);
                 redirectCourse(
                   course_name,
                   paymentArray[1],
                   name,
                   sanitizedEmail,
-                  whatsapp
+                  whatsapp,
+                  response.razorpay_payment_id
                 );
               },
               modal: {
