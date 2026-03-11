@@ -1,36 +1,12 @@
 (function () {
-  function getlocalStorageCart() {
-    const cart = localStorage.getItem("cartItems");
-    if (!cart) return [];
-    const parsedCart = JSON.parse(cart);
-    const uniqueCart = [...new Set(parsedCart)];
-    console.log(uniqueCart);
-    return uniqueCart;
-  }
+  // Always load payment scripts (subscription only, value always 1999)
+  const razorpayScript = document.createElement("script");
+  razorpayScript.src = "https://checkout.razorpay.com/v1/checkout.js";
+  document.head.appendChild(razorpayScript);
 
-  // Check if cart contains free courses (case-insensitive)
-  function hasFreeCourses(course_array) {
-    return course_array.some((course) =>
-      course.toUpperCase().includes("_FREE")
-    );
-  }
-
-  // Only load payment scripts if cart doesn't contain free courses
-  const cartItems = getlocalStorageCart();
-  const isFreeCourseOnly = cartItems.length > 0 && hasFreeCourses(cartItems);
-
-  if (!isFreeCourseOnly) {
-    console.log("Loading payment scripts for paid courses");
-    const razorpayScript = document.createElement("script");
-    razorpayScript.src = "https://checkout.razorpay.com/v1/checkout.js";
-    document.head.appendChild(razorpayScript);
-
-    const stripeScript = document.createElement("script");
-    stripeScript.src = "https://js.stripe.com/v3/";
-    document.head.appendChild(stripeScript);
-  } else {
-    console.log("Free course detected - skipping payment script loading");
-  }
+  const stripeScript = document.createElement("script");
+  stripeScript.src = "https://js.stripe.com/v3/";
+  document.head.appendChild(stripeScript);
 
   let isProcessing = false; // Flag to prevent multiple submissions
 
@@ -70,8 +46,6 @@
 
   async function initializePaymentForm() {
     try {
-      const course_name = getlocalStorageCart();
-
       // Wait for elements to be available
       const submitBtn = await waitForElement("#submitform");
       const userForm = await waitForElement("#detailsform");
@@ -109,48 +83,6 @@
       // Add Event Listener to Submit Button (In Framer Override)
 
       // Elements are now guaranteed to be available
-
-      // Handle free course enrollment
-      async function enrollFreeCourse(course_name_array, name, email, phone) {
-        try {
-          // Get first free course (case-insensitive)
-          const freeCourse = course_name_array.find((course) =>
-            course.toUpperCase().includes("_FREE")
-          );
-
-          if (!freeCourse) {
-            console.error("No free course found in cart");
-            return null;
-          }
-
-          console.log(`Enrolling in free course: ${freeCourse}`);
-
-          const response = await fetch(
-            `https://webveda-be.onrender.com/api/free-course/${freeCourse}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: name,
-                email: email,
-                phone: phone,
-                course: freeCourse,
-              }),
-            }
-          );
-
-          if (response.ok) {
-            const data = await response.json();
-            return data.redirectUrl || null;
-          } else {
-            console.error("Free course enrollment failed:", response.status);
-            return null;
-          }
-        } catch (error) {
-          console.error("Error enrolling in free course:", error);
-          return null;
-        }
-      }
 
       async function createTagMangoSubscription(name, email, phone) {
         try {
@@ -354,24 +286,14 @@
         return { isValid, sanitizedEmail };
       }
 
-      function redirectCourse(
-        course_array,
-        amount,
-        name,
-        email,
-        phone,
-        payment_id
-      ) {
+      function redirectThankYou(amount, name, email, phone, payment_id) {
         const link = "final-thankyou";
-
         const sanitizedName = name.trim().replace(/\s+/g, "");
         const sanitizedEmail = encodeURIComponent(email.trim());
         const sanitizedPhone = phone.replace(/[^0-9]/g, "");
-
-        const course_str = course_array.join("-");
         window.location.href = `/${link}?amount=${
           amount / 100
-        }&course=${course_str}&paymentId=${payment_id}&name=${sanitizedName}&email=${sanitizedEmail}&phone_number=${sanitizedPhone}&currency=INR&${new URLSearchParams(
+        }&course=subscription&paymentId=${payment_id}&name=${sanitizedName}&email=${sanitizedEmail}&phone_number=${sanitizedPhone}&currency=INR&${new URLSearchParams(
           window.location.search
         )}`;
       }
@@ -403,63 +325,18 @@
           console.log(formData);
           const name = formData.get("name");
           let whatsapp = formData.get("phone").replace(/\s+/g, "");
-          //const countrycode = formData.get("countrycode").replace(/\s+/g, "");
           const email = formData.get("email").trim();
-          const course_name_reload = getlocalStorageCart();
 
-          //Check if cart course is loaded
-          if (course_name.length < 1) {
-            isProcessing = false;
-            window.isProcessing = false;
-            submitBtn.style.opacity = "1";
-            return;
-          }
-
-          // Check for free courses EARLY - before any payment processing
-          console.log("Cart contents:", course_name_reload);
-          const isFreeEnrollment = hasFreeCourses(course_name_reload);
-          console.log("Is free enrollment:", isFreeEnrollment);
-
-          //Check if IP Data is Present
           if (ip_data) {
-            //Check if Whatsapp is less than 10 characters add country calling code
-            if (whatsapp.length <= 10) {
-              if (ip_data.country_calling_code) {
-                whatsapp = ip_data.country_calling_code + whatsapp;
-              }
+            if (whatsapp.length <= 10 && ip_data.country_calling_code) {
+              whatsapp = ip_data.country_calling_code + whatsapp;
             }
           }
 
-          //Validate Form - Show Errors if any
           const validationResult = validateForm(name, whatsapp, email);
           if (validationResult.isValid) {
             const sanitizedEmail = validationResult.sanitizedEmail;
 
-            // Handle free course enrollment - SKIP ALL PAYMENT LOGIC
-            if (isFreeEnrollment) {
-              console.log("Free course detected, enrolling...");
-              const redirectUrl = await enrollFreeCourse(
-                course_name_reload,
-                name,
-                sanitizedEmail,
-                whatsapp
-              );
-
-              if (redirectUrl) {
-                console.log(`Redirecting to: ${redirectUrl}`);
-                window.location.href = redirectUrl;
-              } else {
-                isProcessing = false;
-                window.isProcessing = false;
-                submitBtn.disabled = false;
-                submitBtn.classList.remove("loading");
-                submitBtn.style.opacity = "1";
-                alert("Free course enrollment failed. Please try again.");
-              }
-              return;
-            }
-
-            // Create TagMango subscription (ONLY for paid / subscription flow)
             console.log("Creating TagMango subscription...");
             const subscriptionData = await createTagMangoSubscription(
               name,
@@ -496,8 +373,7 @@
                   response.razorpay_payment_id ||
                   response.razorpay_subscription_id ||
                   subscriptionId;
-                redirectCourse(
-                  course_name_reload,
+                redirectThankYou(
                   TAGMANGO_SUBSCRIPTION_AMOUNT_PAISE,
                   name,
                   sanitizedEmail,
@@ -564,49 +440,16 @@
             }
           }, 30000); // 30 seconds timeout
 
-          //Get User Details From Form
           const formData = new FormData(userForm);
           console.log(formData);
           const name = formData.get("name");
           let whatsapp = formData.get("phone").replace(/\s+/g, "");
           const email = formData.get("email").trim();
-          const course_name_reload = getlocalStorageCart();
 
-          // Check for free courses EARLY - before any payment processing
-          console.log("Cart contents:", course_name_reload);
-          const isFreeEnrollment = hasFreeCourses(course_name_reload);
-          console.log("Is free enrollment:", isFreeEnrollment);
-
-          //Validate Form - Show Errors if any
           const validationResult = validateForm(name, whatsapp, email);
           if (validationResult.isValid) {
             const sanitizedEmail = validationResult.sanitizedEmail;
 
-            // Handle free course enrollment - SKIP ALL PAYMENT LOGIC
-            if (isFreeEnrollment) {
-              console.log("Free course detected, enrolling...");
-              const redirectUrl = await enrollFreeCourse(
-                course_name_reload,
-                name,
-                sanitizedEmail,
-                whatsapp
-              );
-
-              if (redirectUrl) {
-                console.log(`Redirecting to: ${redirectUrl}`);
-                window.location.href = redirectUrl;
-              } else {
-                isProcessing = false;
-                window.isProcessing = false;
-                submitBtn.disabled = false;
-                submitBtn.classList.remove("loading");
-                submitBtn.style.opacity = "1";
-                alert("Free course enrollment failed. Please try again.");
-              }
-              return;
-            }
-
-            // For non-IN: create TagMango subscription and redirect to short_url
             console.log("Creating TagMango subscription (non-IN)...");
             const subscriptionData = await createTagMangoSubscription(
               name,
