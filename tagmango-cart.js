@@ -467,10 +467,7 @@
               whatsapp
             );
 
-            if (
-              !subscriptionData ||
-              !subscriptionData.subscriptionId
-            ) {
+            if (!subscriptionData || !subscriptionData.subscriptionId) {
               isProcessing = false;
               window.isProcessing = false;
               submitBtn.disabled = false;
@@ -484,7 +481,7 @@
             console.log("Opening Razorpay for subscription:", subscriptionId);
 
             const rzp1 = new Razorpay({
-              key: "rzp_live_YZSHqiTnfwaXXt",
+              key: "rzp_test_qznxbMCkyK8R4T",
               currency: "INR",
               name: "Zaan WebVeda Pvt. Ltd.",
               description: "TagMango Subscription (₹1999)",
@@ -496,7 +493,9 @@
               handler: (response) => {
                 console.log(response);
                 const paymentId =
-                  response.razorpay_payment_id || response.razorpay_subscription_id || subscriptionId;
+                  response.razorpay_payment_id ||
+                  response.razorpay_subscription_id ||
+                  subscriptionId;
                 redirectCourse(
                   course_name_reload,
                   TAGMANGO_SUBSCRIPTION_AMOUNT_PAISE,
