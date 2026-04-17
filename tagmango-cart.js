@@ -84,9 +84,44 @@
 
       // Elements are now guaranteed to be available
 
-      async function createTagMangoSubscription(name, email, phone) {
+      async function createTagMangoSubscription(name, email, phone, ip_data) {
         try {
+          async function getIPAddress() {
+            try {
+              const ipv6Response = await fetch(
+                "https://api6.ipify.org/?format=json"
+              );
+              const ipv6Data = await ipv6Response.json();
+              return ipv6Data.ip;
+            } catch (error) {
+              try {
+                const ipv4Response = await fetch(
+                  "https://api.ipify.org?format=json"
+                );
+                const ipv4Data = await ipv4Response.json();
+                return ipv4Data.ip;
+              } catch (error2) {
+                return "";
+              }
+            }
+          }
+
           const url = new URL(window.location.href);
+          const timestamp = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("timestamp="))
+            ?.split("=")[1];
+          const fbc = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("_fbc="))
+            ?.split("=")[1];
+          const fbp = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("_fbp="))
+            ?.split("=")[1];
+          const ipAddress = await getIPAddress();
+          const userAgent = navigator.userAgent || "";
+
           const body = {
             name: name,
             email: email,
@@ -95,9 +130,19 @@
             utmSource: url.searchParams.get("utm_source") || "",
             utmMedium: url.searchParams.get("utm_medium") || "",
             utmCampaign: url.searchParams.get("utm_campaign") || "",
+            utmContent: url.searchParams.get("utm_content") || "",
+            utmTerm: url.searchParams.get("utm_term") || "",
+            eventId: timestamp || "",
+            ipAddress: ipAddress || "",
+            fbp: fbp || "",
+            fbc: fbc || "",
+            userAgent: userAgent,
+            ip_data: ip_data != null ? ip_data : null,
+            coupon: url.searchParams.get("coupon") || "",
           };
+          console.log(JSON.stringify(body));
           const response = await fetch(
-            "https://webveda-be.onrender.com/api/tagmango/razorpay/create-subscription",
+            "https://webveda-be.onrender.com/v2/razorpay/generate-subscription",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -105,13 +150,13 @@
             }
           );
           if (!response.ok) {
-            console.error("TagMango subscription failed:", response.status);
+            console.error("Generate subscription failed:", response.status);
             return null;
           }
           const data = await response.json();
           return data;
         } catch (e) {
-          console.error("Error creating TagMango subscription:", e);
+          console.error("Error generating subscription:", e);
           return null;
         }
       }
@@ -341,7 +386,8 @@
             const subscriptionData = await createTagMangoSubscription(
               name,
               sanitizedEmail,
-              whatsapp
+              whatsapp,
+              ip_data
             );
 
             if (!subscriptionData || !subscriptionData.subscriptionId) {
@@ -454,7 +500,8 @@
             const subscriptionData = await createTagMangoSubscription(
               name,
               sanitizedEmail,
-              whatsapp
+              whatsapp,
+              ip_data
             );
 
             if (subscriptionData && subscriptionData.short_url) {
